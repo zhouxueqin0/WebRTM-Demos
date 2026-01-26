@@ -6,7 +6,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { mockLogin } from "../../../../../shared/utils/auth.js";
@@ -19,7 +19,7 @@ const handleLogin = async () => {
   const result = await mockLogin("user", "password");
   loading.value = false;
 
-  if (result.success) {
+  if (result.success && result.token) {
     localStorage.setItem("token", result.token);
     router.push("/dashboard");
   }

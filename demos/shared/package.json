@@ -8,12 +8,14 @@
     "test:watch": "vitest"
   },
   "exports": {
-    "./utils/auth": "./utils/auth.js",
-    "./utils/storage": "./utils/storage.js",
-    "./utils/validator": "./utils/validator.js",
+    "./utils/auth": "./utils/auth.ts",
+    "./utils/storage": "./utils/storage.ts",
+    "./utils/validator": "./utils/validator.ts",
     "./test-utils": "./test-utils/setup.js"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
     "vitest": "^1.0.0"
   }
 }
