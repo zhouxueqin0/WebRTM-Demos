@@ -283,17 +283,17 @@
 
 ### 文件命名
 
-- 组件文件：`PascalCase.vue` / `PascalCase.jsx`
-- 工具文件：`kebab-case.js`
-- 测试文件：`*.spec.js` (Vue) / `*.test.jsx` (React)
-- 配置文件：`kebab-case.config.js`
+- 组件文件：`PascalCase.vue` / `PascalCase.tsx`
+- 工具文件：`kebab-case.ts`
+- 测试文件：`*.spec.ts` (Vue) / `*.test.tsx` (React)
+- 配置文件：`kebab-case.config.ts`
 
 ### 代码风格
 
-- Vue3：使用 `<script setup>` 语法
-- React：使用函数组件 + Hooks
+- Vue3：使用 `<script setup lang="ts">` 语法
+- React：使用函数组件 + Hooks + TypeScript
 - 导入路径：使用相对路径
-- 共享工具导入：`../../shared/utils/xxx.js`
+- 共享工具导入：`../../shared/utils/xxx.js`（注意：导入时仍使用 .js 扩展名）
 
 ---
 
@@ -372,9 +372,9 @@ Generated with AI Agent"
 
 ## 共享工具使用指南
 
-### 认证工具 (auth.js)
+### 认证工具 (auth.ts)
 
-```javascript
+```typescript
 import {
   mockLogin,
   mockLogout,
@@ -383,7 +383,7 @@ import {
 
 // 登录
 const result = await mockLogin("username", "password");
-if (result.success) {
+if (result.success && result.token) {
   localStorage.setItem("token", result.token);
 }
 
@@ -396,36 +396,37 @@ if (isAuthenticated()) {
 }
 ```
 
-### 存储工具 (storage.js)
+### 存储工具 (storage.ts)
 
-```javascript
+```typescript
 import { storage } from "../../shared/utils/storage.js";
 
 storage.set("key", { data: "value" });
-const data = storage.get("key");
+const data = storage.get<{ data: string }>("key");
 storage.remove("key");
 storage.clear();
 ```
 
-### 验证工具 (validator.js)
+### 验证工具 (validator.ts)
 
-```javascript
+```typescript
 import {
   isValidEmail,
   validatePassword,
   validateUsername,
+  type ValidationResult,
 } from "../../shared/utils/validator.js";
 
 if (isValidEmail("test@example.com")) {
   /* ... */
 }
 
-const pwdResult = validatePassword("password123");
+const pwdResult: ValidationResult = validatePassword("password123");
 if (pwdResult.valid) {
   /* ... */
 }
 
-const userResult = validateUsername("user123");
+const userResult: ValidationResult = validateUsername("user123");
 if (!userResult.valid) {
   console.log(userResult.message);
 }

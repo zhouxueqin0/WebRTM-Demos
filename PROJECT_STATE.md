@@ -33,8 +33,9 @@
 - [x] 迁移 demos/h5（已是 TS，无需迁移）
 - [x] 迁移 demos/electron/vue（含打包脚本）
 - [x] 迁移 demos/electron/react（含打包脚本）
+- [x] 更新 AGENTS.md 中的共享工具使用指南（.js → .ts）
+- [ ] 各项目安装新的 TypeScript 依赖（需用户执行 npm install）
 - [ ] 验证所有项目的类型检查和测试
-- [ ] 更新 AGENTS.md 中的共享工具使用指南（.js → .ts）
 
 ## 已完成/变更摘要（PR 可直接使用）
 
