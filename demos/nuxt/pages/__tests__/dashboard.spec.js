@@ -1,0 +1,10 @@
+import { describe, it, expect } from 'vitest'
+import { mount } from '@vue/test-utils'
+import Dashboard from '../dashboard.vue'
+
+describe('Dashboard page', () => {
+  it('renders Hello World', () => {
+    const wrapper = mount(Dashboard)
+    expect(wrapper.find('h1').text()).toBe('Hello World')
+  })
+})

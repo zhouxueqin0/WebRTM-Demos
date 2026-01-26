@@ -1,0 +1,6 @@
+.ai-coding
+.env
+.vscode
+.history
+
+node_modules

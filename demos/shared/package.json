@@ -1,0 +1,19 @@
+{
+  "name": "@demos/shared",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest --run",
+    "test:watch": "vitest"
+  },
+  "exports": {
+    "./utils/auth": "./utils/auth.js",
+    "./utils/storage": "./utils/storage.js",
+    "./utils/validator": "./utils/validator.js",
+    "./test-utils": "./test-utils/setup.js"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  }
+}
