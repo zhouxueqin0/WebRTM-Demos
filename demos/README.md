@@ -8,9 +8,9 @@
 demos/
 ├── shared/            # 共享工具和函数
 │   ├── utils/
-│   │   ├── auth.js       # 认证相关工具（mockLogin, mockLogout, isAuthenticated）
-│   │   ├── storage.js    # LocalStorage 封装
-│   │   └── validator.js  # 表单验证工具
+│   │   ├── auth.ts       # 认证相关工具（mockLogin, mockLogout, isAuthenticated）
+│   │   ├── storage.ts    # LocalStorage 封装
+│   │   └── validator.ts  # 表单验证工具
 │   └── test-utils/       # 测试工具
 ├── vue/
 │   ├── vite/          # Vue3 + Vite
@@ -38,20 +38,20 @@ demos/
 
 所有项目共享以下工具函数（位于 `demos/shared/` 目录）：
 
-### 认证工具 (auth.js)
+### 认证工具 (auth.ts)
 
 - `mockLogin(username, password)` - 模拟登录（1 秒延迟）
 - `mockLogout()` - 模拟登出
 - `isAuthenticated()` - 检查是否已认证
 
-### 存储工具 (storage.js)
+### 存储工具 (storage.ts)
 
 - `storage.set(key, value)` - 存储数据
 - `storage.get(key)` - 获取数据
 - `storage.remove(key)` - 删除数据
 - `storage.clear()` - 清空所有数据
 
-### 验证工具 (validator.js)
+### 验证工具 (validator.ts)
 
 - `isValidEmail(email)` - 验证邮箱格式
 - `validatePassword(password)` - 验证密码强度
@@ -204,6 +204,6 @@ done
 
 ## 开发建议
 
-1. 所有项目都使用了共享的 `mockLogin` 函数，你可以在 `demos/shared/utils/auth.js` 中实现真实的登录逻辑
+1. 所有项目都使用了共享的 `mockLogin` 函数，你可以在 `demos/shared/utils/auth.ts` 中实现真实的登录逻辑
 2. 使用 `npm test` 运行测试，使用 `npm run test:watch` 进入监听模式
 3. 共享工具可以根据需要扩展，所有项目都可以直接引用

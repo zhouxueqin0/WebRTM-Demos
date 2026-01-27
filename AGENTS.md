@@ -294,7 +294,9 @@
 - Vue3：使用 `<script setup lang="ts">` 语法
 - React：使用函数组件 + Hooks + TypeScript
 - 导入路径：使用相对路径
-- 共享工具导入：`../../shared/utils/xxx.js`（注意：导入时仍使用 .js 扩展名）
+- **共享工具导入**：
+  - TypeScript 项目：直接导入不带扩展名 `import { xxx } from '../../shared/utils/auth'`
+  - Next.js 注意：agora-rtm SDK 仅客户端可用，页面需标记 `'use client'`
 
 ---
 
@@ -425,6 +427,8 @@ if (isAuthenticated()) {
   // 已登录
 }
 ```
+
+**注意**：Next.js 项目中使用 RTM 功能的页面必须添加 `'use client'` 指令。
 
 ### 存储工具 (storage.ts)
 

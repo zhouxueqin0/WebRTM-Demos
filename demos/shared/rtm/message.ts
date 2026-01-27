@@ -24,4 +24,11 @@ async function publishChannelMessage(
   await getGlobalRtmClient().publish(channelName, msg, options);
 }
 
-export { publishChannelMessage, publishPeerMessage };
+/**
+ * Send message to a specific user (alias for publishPeerMessage)
+ */
+async function sendMessageToUser(userId: string, message: string) {
+  await publishPeerMessage(userId, message);
+}
+
+export { publishChannelMessage, publishPeerMessage, sendMessageToUser };
