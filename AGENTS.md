@@ -235,6 +235,7 @@
 | docs/WORKFLOW_TEMPLATES.md | 工作流模板                                        |
 | docs/REVIEW_TEMPLATES.md   | 评审清单模板                                      |
 | demos/README.md            | Demo 项目使用说明                                 |
+| demos/ENV_SETUP.md         | 环境变量配置指南                                  |
 
 ---
 
@@ -336,6 +337,31 @@ npm install
 npm test
 ```
 
+### 环境变量配置
+
+每个项目都支持 `.env` 文件配置，详见 `demos/ENV_SETUP.md`。
+
+```bash
+# 1. 复制示例文件
+cp .env.example .env
+
+# 2. 编辑 .env 填入配置
+
+# 3. Webpack 项目需要安装依赖
+cd demos/vue/webpack  # 或 demos/react/webpack
+npm install
+
+# 4. 重启开发服务器
+npm run dev
+```
+
+**环境变量前缀**：
+
+- Vite 项目：`VITE_APP_ID`, `VITE_APP_CERT`
+- Webpack 项目：`APP_ID`, `APP_CERT`
+- Next.js：`NEXT_PUBLIC_APP_ID`, `NEXT_PUBLIC_APP_CERT`
+- Nuxt：`NUXT_PUBLIC_APP_ID`, `NUXT_PUBLIC_APP_CERT`
+
 ---
 
 ## Git Commit 格式
@@ -379,12 +405,16 @@ import {
   mockLogin,
   mockLogout,
   isAuthenticated,
-} from "../../shared/utils/auth.js";
+} from "../../shared/utils/auth";
 
-// 登录
-const result = await mockLogin("username", "password");
-if (result.success && result.token) {
-  localStorage.setItem("token", result.token);
+// 登录（现在使用 RTM 登录）
+try {
+  await mockLogin("username", "password");
+  localStorage.setItem("token", "mock-token-" + Date.now());
+  // 登录成功，跳转到 dashboard
+} catch (error) {
+  console.error("Login failed:", error);
+  // 处理登录失败
 }
 
 // 登出
@@ -399,7 +429,7 @@ if (isAuthenticated()) {
 ### 存储工具 (storage.ts)
 
 ```typescript
-import { storage } from "../../shared/utils/storage.js";
+import { storage } from "../../shared/utils/storage";
 
 storage.set("key", { data: "value" });
 const data = storage.get<{ data: string }>("key");
@@ -415,7 +445,7 @@ import {
   validatePassword,
   validateUsername,
   type ValidationResult,
-} from "../../shared/utils/validator.js";
+} from "../../shared/utils/validator";
 
 if (isValidEmail("test@example.com")) {
   /* ... */

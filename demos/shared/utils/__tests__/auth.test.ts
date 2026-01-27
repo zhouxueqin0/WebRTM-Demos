@@ -1,31 +1,50 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { mockLogin, mockLogout, isAuthenticated } from "../auth.js";
-import { mockLocalStorage } from "../../test-utils/setup.js";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { mockLogin, mockLogout, isAuthenticated } from "../auth";
+import { mockLocalStorage } from "../../test-utils/setup";
+
+// Mock RTM module
+vi.mock("../rtm", () => ({
+  initRtm: vi.fn().mockResolvedValue(undefined),
+  RTMBaseError: class RTMBaseError extends Error {
+    reason: string;
+    errorCode: number;
+    operation: string;
+    constructor(message: string) {
+      super(message);
+      this.reason = message;
+      this.errorCode = 0;
+      this.operation = "test";
+    }
+  },
+}));
 
 describe("auth utils", () => {
   beforeEach(() => {
-    global.localStorage = mockLocalStorage();
+    (global || window).localStorage = mockLocalStorage();
+    vi.clearAllMocks();
   });
 
   describe("mockLogin", () => {
-    it("returns success with valid credentials", async () => {
-      const result = await mockLogin("user", "password");
-      expect(result.success).toBe(true);
-      expect(result.token).toBeDefined();
-      expect(result.user?.username).toBe("user");
+    it("calls initRtm with username", async () => {
+      const { initRtm } = await import("../../rtm");
+      await mockLogin("test-user", "password");
+      expect(initRtm).toHaveBeenCalledWith("test-user");
     });
 
-    it("returns failure with empty credentials", async () => {
-      const result = await mockLogin("", "");
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("Invalid credentials");
+    it("uses default username when not provided", async () => {
+      const { initRtm } = await import("../../rtm");
+      await mockLogin();
+      expect(initRtm).toHaveBeenCalledWith("test-demo");
     });
 
-    it("takes at least 1 second", async () => {
-      const start = Date.now();
-      await mockLogin("user", "password");
-      const duration = Date.now() - start;
-      expect(duration).toBeGreaterThanOrEqual(1000);
+    it("throws error when RTM login fails", async () => {
+      const { initRtm } = await import("../../rtm");
+      const mockError = new Error("RTM connection failed");
+      vi.mocked(initRtm).mockRejectedValueOnce(mockError);
+
+      await expect(mockLogin("user", "password")).rejects.toThrow(
+        "RTM connection failed",
+      );
     });
   });
 

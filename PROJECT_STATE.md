@@ -2,54 +2,53 @@
 
 ## 目标
 
-- 将所有 demo 项目的 JavaScript 文件迁移到 TypeScript
+- 同步 mockLogin 改造到所有 demo 项目
+- 更新测试用例以适配新的 RTM 登录方式
+- 更新文档说明
 
 ## 上下文总结
 
-- 项目包含多个前端框架 demo：Vue3 (vite/webpack)、React (vite/webpack)、Nuxt 3、Next.js 14、H5 (Vanilla)、Electron (vue/react)
-- 共享工具库位于 `demos/shared/`，其中 `rtm/` 目录已经是 TypeScript
-- 需要迁移的主要是各 demo 的源码文件和配置文件
+- mockLogin 已改造为直接调用 RTM 登录（initRtm）
+- 不再返回 LoginResult，改为 Promise<void>
+- 需要同步所有 demo 项目的登录页面
+- 需要更新测试用例，mock RTM 模块
+- Next.js 项目已完成改造，作为参考模板
 - 当前运行时：Node.js v22.21.1，包管理器：npm
 
 ## 注意点
 
-- 每个 demo 项目互不依赖，需要独立处理
-- 需要为每个项目添加/更新 `tsconfig.json`
-- 测试文件也需要从 `.test.js/.spec.js` 迁移到 `.test.ts/.spec.ts`
-- Vitest 配置文件需要从 `.js` 迁移到 `.ts`
-- 共享工具的 `utils/` 目录需要迁移（`rtm/` 已是 TS）
-- 修改前需要推测影响范围并确认
+- mockLogin 现在直接调用 RTM 登录，不返回结果
+- 登录成功后需要手动设置 localStorage token
+- 登录失败会抛出异常，需要 try-catch 处理
+- 测试用例需要 mock RTM 模块
+- 所有 demo 项目的登录逻辑需要统一
 
 ## 待办（带复选框）
 
-- [x] 推测影响范围并获取用户确认
-- [x] 迁移 demos/shared/utils（auth.js, storage.js, validator.js 及测试）
-- [x] 迁移 demos/vue/vite（含打包脚本）
-- [x] 迁移 demos/vue/webpack（含打包脚本）
-- [x] 迁移 demos/react/vite（含打包脚本）
-- [x] 迁移 demos/react/webpack（含打包脚本）
-- [x] 迁移 demos/nuxt（含打包脚本）
-- [x] 迁移 demos/nextjs（含打包脚本）
-- [x] 迁移 demos/h5（已是 TS，无需迁移）
-- [x] 迁移 demos/electron/vue（含打包脚本）
-- [x] 迁移 demos/electron/react（含打包脚本）
-- [x] 更新 AGENTS.md 中的共享工具使用指南（.js → .ts）
-- [ ] 各项目安装新的 TypeScript 依赖（需用户执行 npm install）
-- [ ] 验证所有项目的类型检查和测试
+- [x] 清理 demos/shared/utils/auth.ts 代码
+- [x] 更新 demos/shared/utils/**tests**/auth.test.ts
+- [x] 更新 demos/vue/vite/src/views/Login.vue
+- [x] 更新 demos/vue/webpack/src/views/Login.vue
+- [x] 更新 demos/react/vite/src/pages/Login.tsx
+- [x] 更新 demos/react/webpack/src/pages/Login.tsx
+- [x] 更新 demos/nuxt/pages/index.vue
+- [x] 更新 demos/h5/src/main.ts
+- [x] 更新 demos/electron/vue/src/views/Login.vue
+- [x] 更新 demos/electron/react/src/pages/Login.tsx
+- [x] 更新 AGENTS.md 文档
+- [x] 用户 review 代码
 
 ## 已完成/变更摘要（PR 可直接使用）
 
-- 变更摘要：将所有 demo 项目从 JavaScript 迁移到 TypeScript
+- 变更摘要：同步 mockLogin 改造到所有 demo 项目
 - 影响范围：
-  - demos/shared/utils（auth, storage, validator 及测试）
-  - demos/vue/vite, demos/vue/webpack
-  - demos/react/vite, demos/react/webpack
-  - demos/nextjs
-  - demos/nuxt（仅更新 Vue 组件）
-  - demos/electron/vue, demos/electron/react
-  - 所有项目的配置文件（vite.config, webpack.config, vitest.config, package.json）
-- 验证方式：待执行类型检查和测试
-- 风险与回滚：所有旧 JS 文件已删除，可通过 git 回滚
+  - demos/shared/utils/auth.ts（清理代码和注释）
+  - demos/shared/utils/**tests**/auth.test.ts（更新测试，mock RTM）
+  - 所有 demo 项目的登录页面（移除 result 判断，添加 try-catch）
+  - AGENTS.md（更新使用示例）
+- 关键变更：mockLogin 不再返回 LoginResult，改为 Promise<void>
+- 验证方式：运行测试，手动测试各项目登录功能
+- 风险与回滚：登录逻辑变更，需要确保所有项目都已更新
 
 ## 会话评审记录（每个 Session 追加一段）
 

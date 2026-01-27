@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { storage } from "../storage.js";
-import { mockLocalStorage } from "../../test-utils/setup.js";
+import { storage } from "../storage";
+import { mockLocalStorage } from "../../test-utils/setup";
 
 describe("storage utils", () => {
   beforeEach(() => {
-    global.localStorage = mockLocalStorage();
+    (global || window).localStorage = mockLocalStorage();
   });
 
   it("sets and gets string value", () => {

@@ -1,5 +1,5 @@
 import "./style.css";
-import { mockLogin } from "../../shared/utils/auth.js";
+import { mockLogin } from "../../shared/utils/auth";
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
@@ -15,11 +15,14 @@ const renderLogin = () => {
     loginBtn.disabled = true;
     loginBtn.textContent = "Loading...";
 
-    const result = await mockLogin("user", "password");
-
-    if (result.success) {
-      localStorage.setItem("token", result.token);
+    try {
+      await mockLogin("user", "password");
+      localStorage.setItem("token", "mock-token-" + Date.now());
       renderDashboard();
+    } catch (error) {
+      console.error("Login failed:", error);
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Login";
     }
   });
 };

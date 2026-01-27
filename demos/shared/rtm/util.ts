@@ -5,24 +5,35 @@ import AgoraRTM, {
   RTMStreamChannel,
   PublishOptions,
 } from "agora-rtm";
-const { RTM } = AgoraRTM;
+const { RTM, constantsType } = AgoraRTM;
 
 // constant variables
-const AgoraAppId = process.env.APP_ID || "";
-const AgoraAppcert = process.env.APP_CERT || "";
+const AgoraAppId =
+  process.env.APP_ID ||
+  process.env.VITE_APP_ID ||
+  process.env.NEXT_PUBLIC_APP_ID ||
+  process.env.NUXT_PUBLIC_APP_ID ||
+  "";
+const AgoraAppcert =
+  process.env.APP_CERT ||
+  process.env.VITE_APP_CERT ||
+  process.env.NEXT_PUBLIC_APP_CERT ||
+  process.env.NUXT_PUBLIC_APP_CERT ||
+  "";
 const rtmConfig = {
   logLevel: "debug",
   logUpload: true,
   heartbeatInterval: 5,
   presenceTimeout: 10,
   cloudProxy: false,
-  privateConfig: {
-    serviceType: ["MESSAGE", "STREAM"],
-    accessPointHosts: [],
-    originDomains: [],
-    eventUploadHosts: [],
-    logUploadHosts: [],
-  },
+  // example
+  // privateConfig: {
+  //   serviceType: ["MESSAGE", "STREAM"],
+  //   accessPointHosts: ["your-ap-domain:port"],
+  //   originDomains: ["your-edge-domain:port"],
+  //   eventUploadHosts: [],
+  //   logUploadHosts: [],
+  // },
 } as RTMConfig;
 
 // business viriables
@@ -76,13 +87,11 @@ function getStreamChannel(channelName: string) {
   return streamChannelMap.get(channelName)!;
 }
 
+// rtm
+export * from "agora-rtm";
 export {
-  // rtm
   RTM,
-  RTMEvents,
-  RTMClient,
-  RTMStreamChannel,
-  PublishOptions,
+  constantsType,
   // business
   AgoraAppId,
   AgoraAppcert,

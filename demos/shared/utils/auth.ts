@@ -1,40 +1,28 @@
-/**
- * Login result interface
- */
-export interface LoginResult {
-  success: boolean;
-  token?: string;
-  user?: { username: string };
-  message?: string;
-}
+import { initRtm, RTMBaseError } from "../rtm";
 
 /**
- * Mock login function
- * @param username - User's username
- * @param password - User's password
- * @returns Promise with login result
+ * Mock login function - now uses RTM login
+ * @param username - User's username (used as RTM uid)
+ * @param password - User's password (optional, for future use)
+ * @returns Promise that resolves when login is successful
  */
 export const mockLogin = async (
-  username = "",
+  username = "test-demo",
   password = "",
-): Promise<LoginResult> => {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // TODO: implement real login logic
-  // For now, accept any non-empty credentials
-  if (username && password) {
-    return {
-      success: true,
-      token: "mock-jwt-token-" + Date.now(),
-      user: { username },
-    };
+): Promise<void> => {
+  try {
+    await initRtm(username);
+  } catch (rtmError) {
+    const { reason, errorCode, operation } = rtmError as RTMBaseError;
+    console.error(
+      {
+        reason,
+        errorCode,
+      },
+      `rtm ${operation} is error`,
+    );
+    throw rtmError;
   }
-
-  return {
-    success: false,
-    message: "Invalid credentials",
-  };
 };
 
 /**

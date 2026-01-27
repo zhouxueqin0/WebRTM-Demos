@@ -1,6 +1,8 @@
 .ai-coding
 .env
+.env.local
 .vscode
 .history
+.next
 
 node_modules

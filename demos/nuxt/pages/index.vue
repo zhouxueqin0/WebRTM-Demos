@@ -7,19 +7,21 @@
 </template>
 
 <script setup lang="ts">
-import { mockLogin } from "../../shared/utils/auth.js";
+import { mockLogin } from "../../shared/utils/auth";
 
 const loading = ref(false);
 const router = useRouter();
 
 const handleLogin = async () => {
   loading.value = true;
-  const result = await mockLogin("user", "password");
-  loading.value = false;
-
-  if (result.success && result.token) {
-    localStorage.setItem("token", result.token);
+  try {
+    await mockLogin("user", "password");
+    localStorage.setItem("token", "mock-token-" + Date.now());
     router.push("/dashboard");
+  } catch (error) {
+    console.error("Login failed:", error);
+  } finally {
+    loading.value = false;
   }
 };
 </script>

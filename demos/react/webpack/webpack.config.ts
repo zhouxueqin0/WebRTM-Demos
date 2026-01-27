@@ -1,5 +1,6 @@
 import path from "path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import Dotenv from "dotenv-webpack";
 import type { Configuration } from "webpack";
 
 const config: Configuration = {
@@ -27,6 +28,9 @@ const config: Configuration = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./public/index.html",
+    }),
+    new Dotenv({
+      systemvars: true,
     }),
   ],
   devServer: {

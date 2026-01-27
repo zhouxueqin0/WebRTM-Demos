@@ -18,6 +18,7 @@
     "@vue/compiler-sfc": "^3.4.0",
     "@vue/test-utils": "^2.4.0",
     "css-loader": "^6.8.0",
+    "dotenv-webpack": "^8.0.0",
     "happy-dom": "^12.10.0",
     "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.0",

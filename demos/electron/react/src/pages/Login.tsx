@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockLogin } from "../../../../../shared/utils/auth.js";
+import { mockLogin } from "../../../../shared/utils/auth";
 import "./Login.css";
 
 export default function Login() {
@@ -9,12 +9,14 @@ export default function Login() {
 
   const handleLogin = async () => {
     setLoading(true);
-    const result = await mockLogin("user", "password");
-    setLoading(false);
-
-    if (result.success && result.token) {
-      localStorage.setItem("token", result.token);
+    try {
+      await mockLogin("user", "password");
+      localStorage.setItem("token", "mock-token-" + Date.now());
       navigate("/dashboard");
+    } catch (error) {
+      console.error("Login failed:", error);
+    } finally {
+      setLoading(false);
     }
   };
 

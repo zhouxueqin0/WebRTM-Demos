@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { mockLogin } from "../../shared/utils/auth.js";
+import { mockLogin } from "../../shared/utils/auth";
 import "./page.css";
 
 export default function Login() {
@@ -11,13 +11,9 @@ export default function Login() {
 
   const handleLogin = async () => {
     setLoading(true);
-    const result = await mockLogin("user", "password");
+    await mockLogin("user", "password");
     setLoading(false);
-
-    if (result.success && result.token) {
-      localStorage.setItem("token", result.token);
-      router.push("/dashboard");
-    }
+    router.push("/dashboard");
   };
 
   return (
