@@ -2,23 +2,24 @@
 
 import { create } from "zustand";
 import type { Message } from "../types/chat";
+import { useUserStore } from "./user";
 
 interface ChatStore {
-  // 私聊消息：teacherUid -> Message[]
+  // 私聊消息：userId -> Message[]
   privateMessages: Record<string, Message[]>;
 
   // 频道消息：channelId -> Message[]
   channelMessages: Record<string, Message[]>;
 
-  // 未读计数：teacherUid -> count
+  // 未读计数：userId -> count
   unreadCounts: Record<string, number>;
 
   // Actions
-  addPrivateMessage: (teacherUid: string, message: Message) => void;
+  addPrivateMessage: (userId: string, message: Message) => void;
   addChannelMessage: (channelId: string, message: Message) => void;
-  clearUnread: (teacherUid: string) => void;
+  clearUnread: (userId: string) => void;
   clearChannelMessages: (channelId: string) => void;
-  incrementUnread: (teacherUid: string) => void;
+  incrementUnread: (userId: string) => void;
 }
 
 export const useChatStore = create<ChatStore>((set) => ({
@@ -26,11 +27,11 @@ export const useChatStore = create<ChatStore>((set) => ({
   channelMessages: {},
   unreadCounts: {},
 
-  addPrivateMessage: (teacherUid, message) =>
+  addPrivateMessage: (userId, message) =>
     set((state) => ({
       privateMessages: {
         ...state.privateMessages,
-        [teacherUid]: [...(state.privateMessages[teacherUid] || []), message],
+        [userId]: [...(state.privateMessages[userId] || []), message],
       },
     })),
 
@@ -42,11 +43,11 @@ export const useChatStore = create<ChatStore>((set) => ({
       },
     })),
 
-  clearUnread: (teacherUid) =>
+  clearUnread: (userId) =>
     set((state) => ({
       unreadCounts: {
         ...state.unreadCounts,
-        [teacherUid]: 0,
+        [userId]: 0,
       },
     })),
 
@@ -58,11 +59,48 @@ export const useChatStore = create<ChatStore>((set) => ({
       },
     })),
 
-  incrementUnread: (teacherUid) =>
+  incrementUnread: (userId) =>
     set((state) => ({
       unreadCounts: {
         ...state.unreadCounts,
-        [teacherUid]: (state.unreadCounts[teacherUid] || 0) + 1,
+        [userId]: (state.unreadCounts[userId] || 0) + 1,
       },
     })),
 }));
+
+export const handleMessage = (eventData: any) => {
+  const localUserId = useUserStore.getState().userId;
+  const { publisher, message, channelType } = eventData;
+
+  if (channelType === "USER") {
+    // 处理私聊消息
+    const msg: Message = {
+      id: `${Date.now()}-${Math.random()}`,
+      senderId: publisher,
+      senderName: publisher,
+      content: message,
+      timestamp: Date.now(),
+    };
+    // 直接使用 store 的 getState() 方法，避免依赖
+    useChatStore.getState().addPrivateMessage(publisher, msg);
+    useChatStore.getState().incrementUnread(publisher);
+  } else if (channelType === "MESSAGE") {
+    // 处理频道消息
+    const { channelName } = eventData;
+
+    let senderName = publisher;
+    if (publisher === localUserId) {
+      senderName = "Me";
+    }
+
+    const msg: Message = {
+      id: `${Date.now()}-${Math.random()}`,
+      senderId: publisher,
+      senderName,
+      content: message,
+      timestamp: Date.now(),
+    };
+
+    useChatStore.getState().addChannelMessage(channelName, msg);
+  }
+};

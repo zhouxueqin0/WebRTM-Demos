@@ -3,29 +3,37 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { isAuthenticated } from "../../../shared/utils/auth";
-import { getGlobalRtmClient } from "../../../shared/rtm/index";
-import { sendMessageToUser } from "../../../shared/rtm/message";
 import {
   subscribeChannel,
   unsubscribeChannel,
   sendChannelMessage,
-} from "../../../shared/rtm/streamchannel";
-import { useChatStore } from "../../store/chat";
-import { MOCK_TEACHERS, MOCK_CLASSROOMS } from "../../mocks/data";
+  sendMessageToUser,
+  getGlobalRtmClient,
+  rtmEventEmitter,
+} from "../../../shared/rtm/index";
+
+import { handleMessage, useChatStore } from "../../store/chat";
+import {
+  MOCK_TEACHERS,
+  MOCK_CLASSROOMS,
+  MOCK_STUDENTS,
+} from "../../mocks/data";
 import TeacherList from "../components/TeacherList";
 import ClassroomList from "../components/ClassroomList";
 import ChatDrawer from "../components/ChatDrawer";
-import type {
-  Teacher,
-  Classroom,
-  ChatDrawerState,
-  Message,
-} from "../../types/chat";
+import type { Classroom, ChatDrawerState, Message } from "../../types/chat";
+import type { User as Teacher } from "../../types/user";
 import "./page.css";
+import { useUserStore } from "@/store/user";
+import StudentList from "../components/StudentList";
+
+// 强制动态渲染，禁用静态生成
+export const dynamic = "force-dynamic";
 
 export default function Dashboard() {
   const router = useRouter();
-  const [currentUserId, setCurrentUserId] = useState("");
+  const userId = useUserStore((s) => s.userId);
+  const userRole = useUserStore((s) => s.role);
   const [classrooms, setClassrooms] = useState(MOCK_CLASSROOMS);
   const [drawerState, setDrawerState] = useState<ChatDrawerState>({
     isOpen: false,
@@ -36,10 +44,7 @@ export default function Dashboard() {
 
   const currentChannelRef = useRef<string | null>(null);
 
-  const addPrivateMessage = useChatStore((s) => s.addPrivateMessage);
-  const addChannelMessage = useChatStore((s) => s.addChannelMessage);
   const clearUnread = useChatStore((s) => s.clearUnread);
-  const incrementUnread = useChatStore((s) => s.incrementUnread);
 
   useEffect(() => {
     // 检查登录状态
@@ -48,99 +53,29 @@ export default function Dashboard() {
       return;
     }
 
-    // 获取当前用户 ID
-    const username = localStorage.getItem("username") || "student";
-    setCurrentUserId(username);
-
-    // 设置课程的 studentUid
-    setClassrooms(MOCK_CLASSROOMS.map((c) => ({ ...c, studentUid: username })));
-
-    // 初始化 RTM 监听
-    let rtmClient;
     try {
-      rtmClient = getGlobalRtmClient();
-    } catch (error) {
-      console.error("RTM client not initialized:", error);
-      return;
+      getGlobalRtmClient();
+    } catch (e) {
+      router.push("/");
     }
 
-    // 监听私聊消息
-    const handleMessage = (event: any) => {
-      const { publisher, message, channelType } = event;
-
-      // 只处理私聊消息
-      if (channelType === "USER") {
-        // 查找是否是老师发来的消息
-        const teacher = MOCK_TEACHERS.find((t) => t.uid === publisher);
-        if (teacher) {
-          const msg: Message = {
-            id: `${Date.now()}-${Math.random()}`,
-            senderId: publisher,
-            senderName: teacher.name,
-            content: message,
-            timestamp: Date.now(),
-          };
-
-          addPrivateMessage(teacher.uid, msg);
-
-          // 如果当前没有打开该老师的聊天窗口，增加未读数
-          if (!drawerState.isOpen || drawerState.targetId !== teacher.uid) {
-            incrementUnread(teacher.uid);
-          }
-        }
-      } else if (channelType === "MESSAGE") {
-        // 处理频道消息
-        const { channelName } = event;
-
-        // 查找发送者名称
-        let senderName = publisher;
-        const teacher = MOCK_TEACHERS.find((t) => t.uid === publisher);
-        if (teacher) {
-          senderName = teacher.name;
-        } else if (publisher === username) {
-          senderName = "Me";
-        }
-
-        const msg: Message = {
-          id: `${Date.now()}-${Math.random()}`,
-          senderId: publisher,
-          senderName,
-          content: message,
-          timestamp: Date.now(),
-        };
-
-        addChannelMessage(channelName, msg);
-      }
-    };
-
-    rtmClient.addEventListener("message", handleMessage);
+    rtmEventEmitter.addListener("message", handleMessage);
 
     return () => {
-      rtmClient.removeEventListener("message", handleMessage);
-
-      // 清理频道订阅
-      if (currentChannelRef.current) {
-        unsubscribeChannel(currentChannelRef.current).catch(console.error);
-      }
+      rtmEventEmitter.removeListener("message", handleMessage);
     };
-  }, [
-    drawerState,
-    addPrivateMessage,
-    addChannelMessage,
-    incrementUnread,
-    router,
-  ]);
+  }, [router]);
 
-  const handleTeacherClick = (teacher: Teacher) => {
+  const handlePrivateChatClick = (teacher: Teacher) => {
     setDrawerState({
       isOpen: true,
       mode: "private",
-      targetId: teacher.uid,
-      targetName: teacher.name,
+      targetId: teacher.userId,
+      targetName: teacher.name ?? teacher.userId,
     });
 
     // 清零未读数
-    clearUnread(teacher.uid);
+    clearUnread(teacher.userId);
   };
 
   const handleClassroomClick = async (classroom: Classroom) => {
@@ -183,28 +118,27 @@ export default function Dashboard() {
         // 发送私聊消息
         await sendMessageToUser(drawerState.targetId, content);
 
-        // 添加到本地消息列表
+        // 添加到本地消息列表 - 使用 getState()
         const msg: Message = {
           id: `${Date.now()}-${Math.random()}`,
-          senderId: currentUserId,
+          senderId: userId,
           senderName: "Me",
           content,
           timestamp: Date.now(),
         };
-        addPrivateMessage(drawerState.targetId, msg);
+        useChatStore.getState().addPrivateMessage(drawerState.targetId, msg);
       } else {
         // 发送频道消息
         await sendChannelMessage(drawerState.targetId, content);
 
-        // 添加到本地消息列表
+        // 添加到本地消息列表 - 使用 getState()
         const msg: Message = {
           id: `${Date.now()}-${Math.random()}`,
-          senderId: currentUserId,
+          senderId: userId,
           senderName: "Me",
           content,
           timestamp: Date.now(),
         };
-        addChannelMessage(drawerState.targetId, msg);
       }
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -216,10 +150,17 @@ export default function Dashboard() {
       <h1>RTM SDK Demo</h1>
 
       <div className="lists-container">
-        <TeacherList
-          teachers={MOCK_TEACHERS}
-          onTeacherClick={handleTeacherClick}
-        />
+        {userRole === "student" ? (
+          <TeacherList
+            teachers={MOCK_TEACHERS}
+            onTeacherClick={handlePrivateChatClick}
+          />
+        ) : (
+          <StudentList
+            students={MOCK_STUDENTS}
+            onStudentClick={handlePrivateChatClick}
+          />
+        )}
         <ClassroomList
           classrooms={classrooms}
           onClassroomClick={handleClassroomClick}
@@ -228,7 +169,7 @@ export default function Dashboard() {
 
       <ChatDrawer
         state={drawerState}
-        currentUserId={currentUserId}
+        currentUserId={userId}
         onClose={handleCloseDrawer}
         onSendMessage={handleSendMessage}
       />

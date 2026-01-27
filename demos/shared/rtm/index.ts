@@ -1,8 +1,13 @@
 export { rtmLogin, initRtm, releaseRtm } from "./login";
 
-export { publishChannelMessage, publishPeerMessage } from "./message";
+export {
+  sendChannelMessage,
+  sendMessageToUser,
+  subscribeChannel,
+  unsubscribeChannel,
+} from "./message";
 
-export { removeRtmEvents, addRtmEvents } from "./rtm-events";
+export { initRtmEvents, releaseRtmEvents } from "./rtm-events";
 
 export { initStreamChannel, joinTopic } from "./streamchannel";
 

@@ -1,3 +1,6 @@
+import EventEmitter from "events";
+import "./private-parameter.ts";
+
 import AgoraRTM, {
   RTMClient,
   RTMConfig,
@@ -40,6 +43,7 @@ const rtmConfig = {
 let globalRtmClient: RTMClient | null = null;
 let rtmState: RTMEvents.LinkState = "IDLE";
 const streamChannelMap: Map<string, RTMStreamChannel> = new Map();
+const rtmEventEmitter = new EventEmitter();
 
 function setRtmClient(client: RTMClient | null) {
   globalRtmClient = client;
@@ -97,6 +101,7 @@ export {
   AgoraAppcert,
   rtmConfig,
   rtmState,
+  rtmEventEmitter,
   setRtmClient,
   setRtmState,
   setStreamChannel,

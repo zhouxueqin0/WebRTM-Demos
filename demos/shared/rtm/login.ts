@@ -5,7 +5,7 @@ import {
   RTM,
   setRtmClient,
 } from "./util";
-import { addRtmEvents, removeRtmEvents } from "./rtm-events";
+import { initRtmEvents, releaseRtmEvents } from "./rtm-events";
 
 // login
 async function rtmLogin(token?: string) {
@@ -21,7 +21,7 @@ async function initRtm(uid: string, token?: string) {
   setRtmClient(rtm);
 
   // add event listeners
-  addRtmEvents();
+  initRtmEvents();
 
   // login
   await rtmLogin(token);
@@ -34,7 +34,7 @@ async function renewRtmToken(token: string) {
 
 // release
 async function releaseRtm() {
-  removeRtmEvents();
+  releaseRtmEvents();
   await getGlobalRtmClient().logout();
 }
 

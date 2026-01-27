@@ -1,15 +1,11 @@
 // 聊天相关类型定义
 
-export interface Teacher {
-  uid: string;
-  name: string;
-  avatar?: string;
-}
+import { User } from "./user";
 
 export interface Classroom {
   id: string;
   name: string;
-  studentUid: string;
+  users: User[];
 }
 
 export interface Message {
@@ -25,6 +21,6 @@ export type ChatMode = "private" | "channel";
 export interface ChatDrawerState {
   isOpen: boolean;
   mode: ChatMode;
-  targetId: string; // teacherUid or channelId
+  targetId: string; // userId or channelId
   targetName: string;
 }

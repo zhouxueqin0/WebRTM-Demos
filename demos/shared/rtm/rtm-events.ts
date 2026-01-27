@@ -1,17 +1,22 @@
-import { RTMEvents, setRtmState, getGlobalRtmClient } from "./util";
+import {
+  RTMEvents,
+  setRtmState,
+  getGlobalRtmClient,
+  rtmEventEmitter,
+} from "./util";
 
 /**
  * @remarks
  * Best Practice!
  */
 function handleLinkState(eventData: RTMEvents.LinkStateEvent) {
-  const { currentState, reasonCode } = eventData;
-  setRtmState(currentState);
+  rtmEventEmitter.emit("linkstate", eventData);
 
   /**
-   * @remarks
-   * needs to work
+   * @example
    */
+  const { currentState, reasonCode } = eventData;
+  setRtmState(currentState);
   if (currentState === "FAILED") {
     switch (reasonCode) {
       case "SAME_UID_LOGIN": {
@@ -50,10 +55,13 @@ function handleLinkState(eventData: RTMEvents.LinkStateEvent) {
 }
 
 function handleMessage(eventData: RTMEvents.MessageEvent) {
+  rtmEventEmitter.emit("message", eventData);
+
+  /**
+   * @example
+   */
   const { channelName, message, publisher, channelType, topicName } = eventData;
-
   console.log(`received message: ${message}`);
-
   if (channelType === "USER") {
     // this is peer message for you, only you can received!
     console.log(`message from user: ${publisher}`);
@@ -68,14 +76,17 @@ function handleMessage(eventData: RTMEvents.MessageEvent) {
   }
 }
 
-function addRtmEvents() {
+/**
+ * global listening
+ */
+function initRtmEvents() {
   getGlobalRtmClient().addEventListener("linkState", handleLinkState);
   getGlobalRtmClient().addEventListener("message", handleMessage);
 }
 
-function removeRtmEvents() {
+function releaseRtmEvents() {
   getGlobalRtmClient().removeEventListener("linkState", handleLinkState);
   getGlobalRtmClient().removeEventListener("message", handleMessage);
 }
 
-export { addRtmEvents, removeRtmEvents };
+export { initRtmEvents, releaseRtmEvents };

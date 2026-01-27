@@ -4,12 +4,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { mockLogin } from "../../shared/utils/auth";
 import "./page.css";
+import { useUserStore } from "@/store/user";
 
 // 强制动态渲染
 export const dynamic = "force-dynamic";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  // const [username, setUsername] = useState("");
+  const userId = useUserStore((s) => s.userId);
+  const userRole = useUserStore((s) => s.role);
+  const setUserId = useUserStore((s) => s.setUserId);
+  const setUserRole = useUserStore((s) => s.setRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -17,7 +22,7 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!username.trim()) {
+    if (!userId.trim()) {
       setError("Please enter a username");
       return;
     }
@@ -26,8 +31,8 @@ export default function Login() {
     setError("");
 
     try {
-      await mockLogin(username, "password");
-      localStorage.setItem("username", username);
+      await mockLogin(userId, "password");
+      localStorage.setItem("username", userId);
       localStorage.setItem("token", "mock-token-" + Date.now());
       router.push("/dashboard");
     } catch (err) {
@@ -49,10 +54,41 @@ export default function Login() {
               id="username"
               type="text"
               placeholder="Enter your user ID"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
               disabled={loading}
             />
+          </div>
+          <div className="form-group">
+            <label htmlFor="userrole">User Role</label>
+            <div className="radio-group">
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="userrole"
+                  value="teacher"
+                  checked={userRole === "teacher"}
+                  onChange={(e) =>
+                    setUserRole(e.target.value as "teacher" | "student")
+                  }
+                  disabled={loading}
+                />
+                Teacher
+              </label>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="userrole"
+                  value="student"
+                  checked={userRole === "student"}
+                  onChange={(e) =>
+                    setUserRole(e.target.value as "teacher" | "student")
+                  }
+                  disabled={loading}
+                />
+                Student
+              </label>
+            </div>
           </div>
           {error && <div className="error-message">{error}</div>}
           <button type="submit" disabled={loading}>

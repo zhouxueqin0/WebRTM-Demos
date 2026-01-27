@@ -1,4 +1,4 @@
-import { initRtm, RTMBaseError } from "../rtm";
+import { getGlobalRtmClient, initRtm, RTMBaseError } from "../rtm";
 
 /**
  * Mock login function - now uses RTM login
@@ -42,6 +42,14 @@ export const mockLogout = async (): Promise<void> => {
  * @returns true if user has a valid token
  */
 export const isAuthenticated = (): boolean => {
+  try {
+    if (!getGlobalRtmClient()) {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+
   if (typeof localStorage !== "undefined") {
     return !!localStorage.getItem("token");
   }

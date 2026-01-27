@@ -1,6 +1,6 @@
 "use client";
 
-import type { Teacher } from "../../types/chat";
+import type { User as Teacher } from "../../types/user";
 import { useChatStore } from "../../store/chat";
 import styles from "./TeacherList.module.css";
 
@@ -20,10 +20,10 @@ export default function TeacherList({
       <h2 className={styles.title}>Teacher List</h2>
       <div className={styles.list}>
         {teachers.map((teacher) => {
-          const unread = unreadCounts[teacher.uid] || 0;
+          const unread = unreadCounts[teacher.userId] || 0;
           return (
             <div
-              key={teacher.uid}
+              key={teacher.userId}
               className={styles.item}
               onClick={() => onTeacherClick(teacher)}
             >
