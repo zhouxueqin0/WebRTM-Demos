@@ -16,6 +16,13 @@ async function rtmLogin(token?: string) {
 
 // init
 async function initRtm(uid: string, token?: string) {
+  // reuse
+  try {
+    const rtm = getGlobalRtmClient();
+    await rtmLogin(token);
+    return;
+  } catch (_) {}
+
   // create
   const rtm = new RTM(AgoraAppId, uid, rtmConfig);
   setRtmClient(rtm);

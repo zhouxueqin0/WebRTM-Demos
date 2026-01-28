@@ -45,6 +45,12 @@
 - [x] 修复 useEffect 重复执行问题
 - [x] 修复 Hook 调用错误（使用 getState()）
 - [x] 更新 AGENTS.md 文档
+- [x] **实现互踢处理逻辑**
+  - [x] 在 Dashboard 注册 linkState 监听
+  - [x] 检测到 SAME_UID_LOGIN 时显示提示框
+  - [x] 提供两个选项："我知道了" 和 "再次登录"
+  - [x] 导出 rtmLogin 函数供重新登录使用
+  - [x] 更新文档说明互踢处理实现
 - [ ] 用户测试验证功能
 
 ## 已完成/变更摘要（PR 可直接使用）

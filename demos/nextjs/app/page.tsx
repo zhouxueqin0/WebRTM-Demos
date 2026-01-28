@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { mockLogin } from "../../shared/utils/auth";
 import "./page.css";
 import { useUserStore } from "@/store/user";
+import { rtmEventEmitter } from "../../shared/rtm";
+import { handleUserMessage } from "@/store/chat";
 
 // 强制动态渲染
 export const dynamic = "force-dynamic";
@@ -35,6 +37,9 @@ export default function Login() {
       localStorage.setItem("username", userId);
       localStorage.setItem("token", "mock-token-" + Date.now());
       router.push("/dashboard");
+
+      // 已全局在线，监听用户消息
+      rtmEventEmitter.addListener("message", handleUserMessage);
     } catch (err) {
       setError("Login failed. Please try again.");
       console.error(err);

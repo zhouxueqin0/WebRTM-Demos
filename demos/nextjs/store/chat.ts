@@ -68,10 +68,9 @@ export const useChatStore = create<ChatStore>((set) => ({
     })),
 }));
 
-export const handleMessage = (eventData: any) => {
+export const handleUserMessage = (eventData: any) => {
   const localUserId = useUserStore.getState().userId;
   const { publisher, message, channelType } = eventData;
-
   if (channelType === "USER") {
     // 处理私聊消息
     const msg: Message = {
@@ -84,7 +83,14 @@ export const handleMessage = (eventData: any) => {
     // 直接使用 store 的 getState() 方法，避免依赖
     useChatStore.getState().addPrivateMessage(publisher, msg);
     useChatStore.getState().incrementUnread(publisher);
-  } else if (channelType === "MESSAGE") {
+  }
+};
+
+export const handleChannelMessage = (eventData: any) => {
+  const localUserId = useUserStore.getState().userId;
+  const { publisher, message, channelType } = eventData;
+
+  if (channelType === "MESSAGE") {
     // 处理频道消息
     const { channelName } = eventData;
 
