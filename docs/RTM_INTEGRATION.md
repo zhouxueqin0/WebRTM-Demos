@@ -173,9 +173,9 @@ sequenceDiagram
     participant User
     participant Dashboard
     participant ChatDrawer
+    participant ChatStore as Chat Store
     participant EventEmitter as Event Emitter
     participant RTMClient as RTM Client (SDK)
-    participant ChatStore as Chat Store
 
     User->>Dashboard: 点击教室
     Dashboard->>EventEmitter: addListener('message', handleChannelMessage)
@@ -230,23 +230,28 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
+    participant EventHandler1 as Event Handler
     participant Device1 as 设备 1 (已登录)
     participant RTMServer as RTM Server
     participant Device2 as 设备 2 (新登录)
-    participant EventHandler as Event Handler
+    participant EventHandler2 as Event Handler
 
     Device2->>RTMServer: login(userId, token)
-    RTMServer->>Device1: 触发 linkState 事件
-    Device1->>EventHandler: handleLinkState(FAILED, SAME_UID_LOGIN)
+    RTMServer->>Device1: 设备 1 被踢下线
+    Device1-->>EventHandler1: handleLinkState(FAILED, SAME_UID_LOGIN)
+    EventHandler1-->>Device1: 显式提示 "账号在其他设备登录，您可以'再次登录'或'退出应用'"
 
-    alt 策略 1: 保留设备 1
-        EventHandler->>Device1: 重新调用 login()
+    alt 策略 1: 设备1用户选择再次登录
+        Device1->> Device1: 选择'再次登录'
         Device1->>RTMServer: login(userId, token)
         RTMServer->>Device2: 设备 2 被踢下线
-    else 策略 2: 保留设备 2
-        EventHandler->>Device1: 显示提示 "账号在其他设备登录"
-        EventHandler->>Device1: 清理本地状态
-        Device1->>Device1: 跳转到登录页
+        Device2-->>EventHandler2: handleLinkState(FAILED, SAME_UID_LOGIN)
+        EventHandler2-->>Device2: 显式提示 "账号在其他设备登录，您可以'再次登录'或'退出应用'"
+        Device2->> Device2: 选择'退出应用'
+        Device2->>Device2: 清理本地状态与事件监听
+    else 策略 2: 设备1用户选择退出应用
+        Device1->> Device1: 选择'退出应用'
+        Device1->>Device1: 清理本地状态与事件监听
     end
 ```
 
