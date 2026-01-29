@@ -297,7 +297,7 @@ export function getGlobalRtmClient(): RTM {
 ```typescript
 // 1. 全局事件监听器（SDK 层）
 function handleLinkState(eventData: RTMEvents.LinkStateEvent) {
-  rtmEventEmitter.emit("linkstate", eventData); // 转发到业务层
+  rtmEventEmitter.emit("linkState", eventData); // 转发到业务层
 
   // 处理连接状态变化
   if (eventData.currentState === "FAILED") {
@@ -400,7 +400,7 @@ export default function ChatDrawer({ state, ... }: ChatDrawerProps) {
       // ⭐ 关闭时立即清理
       rtmEventEmitter.removeListener('message', handleChannelMessage);
     };
-  }, [messages]); // 依赖 messages 以保持滚动
+  }, []);
 }
 ```
 
@@ -520,17 +520,28 @@ export function initRtm(appId: string, userId: string): RTM {
 #### 方案 2：检测并处理 SAME_UID_LOGIN
 
 ```typescript
+async function exitApp() {
+  await releaseRtm();
+  router.push('/');
+}
+
+async function reLogin() {
+  await rtmLogin(getToken()); // 重新登录，踢掉其他设备
+}
+
 function handleLinkState(eventData: RTMEvents.LinkStateEvent) {
   if (eventData.currentState === "FAILED") {
     if (eventData.reasonCode === "SAME_UID_LOGIN") {
-      // 策略 A：保留当前设备，重新登录
-      console.warn("检测到其他设备登录，正在重新连接...");
-      rtmLogin(getToken()); // 重新登录，踢掉其他设备
-
-      // 策略 B：保留新设备，退出当前设备
-      // alert('您的账号在其他设备登录');
-      // releaseRtm();
-      // router.push('/');
+      showKickDialog('您的账号在其他设备登录, 是否重新登录？', {
+        onOk: () => {
+          // 策略 A：保留当前设备，重新登录
+          reLogin();
+        },
+        onCancel: () => {
+          // 策略 B：保留新设备，退出当前设备
+          exitApp();
+        }
+      });
     }
   }
 }
@@ -543,7 +554,28 @@ function handleLinkState(eventData: RTMEvents.LinkStateEvent) {
 const client = initRtm(appId, userId); // 不会重复创建
 
 // 2. 监听互踢事件
-rtmEventEmitter.addListener("linkstate", (eventData) => {
+async function exitApp() {
+  await releaseRtm();
+  router.push('/');
+}
+
+async function reLogin() {
+  await rtmLogin(getToken()); // 重新登录，踢掉其他设备
+}
+
+function handleSameUidLogin = () => {
+  showKickDialog('您的账号在其他设备登录, 是否重新登录？', {
+    onOk: () => {
+      // 策略 A：保留当前设备，重新登录
+      reLogin();
+    },
+    onCancel: () => {
+      // 策略 B：保留新设备，退出当前设备
+      exitApp();
+    }
+  });
+}
+rtmEventEmitter.addListener("linkState", (eventData) => {
   if (eventData.reasonCode === "SAME_UID_LOGIN") {
     // 选择策略：保留当前设备 or 保留新设备
     handleSameUidLogin();
@@ -559,11 +591,17 @@ useEffect(() => {
   }
 }, []);
 
-// 4. 登出时：释放实例
+// 4. 登出 App 或 root 组件销毁时：释放实例
 export function mockLogout() {
   releaseRtm(); // 清理全局实例
   globalRtmClient = null;
 }
+// app root component
+useEffect(() => {
+  return () => {
+    mockLogout();
+  }
+}, [])
 ```
 
 ---
@@ -691,10 +729,10 @@ export default function Dashboard() {
       }
     };
 
-    rtmEventEmitter.addListener("linkstate", handleLinkState);
+    rtmEventEmitter.addListener("linkState", handleLinkState);
 
     return () => {
-      rtmEventEmitter.removeListener("linkstate", handleLinkState);
+      rtmEventEmitter.removeListener("linkState", handleLinkState);
     };
   }, [router]);
 
@@ -781,9 +819,18 @@ export default function Dashboard() {
 ### 7.4 ChatDrawer - 注册频道消息监听
 
 ```typescript
-// app/components/ChatDrawer.tsx
 'use client';
+// app/dashboard/page.tsx
+const handleClassroomClick = async (classroom: Classroom) => {
+  // 订阅前监听，确保不漏消息
+  rtmEventEmitter.addListener('message', handleChannelMessage);
 
+  await subscribeChannel(classroom.id);
+
+  // open ChatDrawer
+}
+
+// app/components/ChatDrawer.tsx
 import { useEffect } from 'react';
 import { rtmEventEmitter } from '../../../shared/rtm';
 import { handleChannelMessage, useChatStore } from '../../store/chat';
@@ -797,14 +844,12 @@ export default function ChatDrawer({ state, ... }: ChatDrawerProps) {
     : channelMessages[state.targetId] || [];
 
   useEffect(() => {
-    // ⭐ 注册频道消息监听（组件生命周期）
-    rtmEventEmitter.addListener('message', handleChannelMessage);
 
     return () => {
       // ⭐ 组件卸载时清理
       rtmEventEmitter.removeListener('message', handleChannelMessage);
     };
-  }, [messages]);
+  }, []);
 
   return (
     <div className="chat-drawer">
@@ -928,7 +973,7 @@ await sendChannelMessage(channelId, "Hello everyone!");
 **A**: 三个关键点：
 
 1. 使用单例模式，全局只创建一个 RTM 实例
-2. **监听 `linkstate` 事件，检测 `SAME_UID_LOGIN`**
+2. **监听 `linkState` 事件，检测 `SAME_UID_LOGIN`**
 3. 页面切换时复用实例，不要重复登录
 
 **实现示例**（已在 Dashboard 页面实现）：
@@ -944,10 +989,10 @@ useEffect(() => {
     }
   };
 
-  rtmEventEmitter.addListener("linkstate", handleLinkState);
+  rtmEventEmitter.addListener("linkState", handleLinkState);
 
   return () => {
-    rtmEventEmitter.removeListener("linkstate", handleLinkState);
+    rtmEventEmitter.removeListener("linkState", handleLinkState);
   };
 }, []);
 ```
@@ -981,7 +1026,7 @@ useEffect(() => {
 - ✅ 使用单例模式管理 RTM 实例
 - ✅ 在 `shared/rtm/rtm-events.ts` 中注册全局事件监听器
 - ✅ 页面切换时复用实例，不要重复登录
-- ✅ **在 Dashboard 页面监听 `linkstate` 事件处理互踢**
+- ✅ **在 Dashboard 页面监听 `linkState` 事件处理互踢**
 - ✅ 提供用户选择："我知道了" 或 "再次登录"
 
 **消息监听策略**：

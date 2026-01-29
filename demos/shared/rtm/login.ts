@@ -4,6 +4,7 @@ import {
   getGlobalRtmClient,
   RTM,
   setRtmClient,
+  setRtmState,
 } from "./util";
 import { initRtmEvents, releaseRtmEvents } from "./rtm-events";
 
@@ -41,6 +42,7 @@ async function renewRtmToken(token: string) {
 
 // release
 async function releaseRtm() {
+  setRtmState('IDLE');
   releaseRtmEvents();
   await getGlobalRtmClient().logout();
 }
