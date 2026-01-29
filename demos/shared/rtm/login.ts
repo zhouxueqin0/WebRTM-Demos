@@ -17,15 +17,15 @@ async function rtmLogin(token?: string) {
 
 // init
 async function initRtm(uid: string, token?: string) {
-  // reuse
+  let rtm;
   try {
-    const rtm = getGlobalRtmClient();
-    await rtmLogin(token);
-    return;
-  } catch (_) {}
+    // reuse
+    rtm = getGlobalRtmClient();
+  } catch (_) {
+    // create
+    rtm = new RTM(AgoraAppId, uid, rtmConfig);
+  }
 
-  // create
-  const rtm = new RTM(AgoraAppId, uid, rtmConfig);
   setRtmClient(rtm);
 
   // add event listeners
@@ -42,7 +42,7 @@ async function renewRtmToken(token: string) {
 
 // release
 async function releaseRtm() {
-  setRtmState('IDLE');
+  setRtmState("IDLE");
   releaseRtmEvents();
   await getGlobalRtmClient().logout();
 }

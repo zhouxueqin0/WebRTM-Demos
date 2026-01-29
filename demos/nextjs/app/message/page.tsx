@@ -10,7 +10,6 @@ import {
   sendMessageToUser,
   getGlobalRtmClient,
   rtmEventEmitter,
-  rtmLogin,
 } from "../../../shared/rtm/index";
 
 import { handleChannelMessage, useChatStore } from "../../store/chat";
@@ -31,18 +30,16 @@ import StudentList from "../components/StudentList";
 // 强制动态渲染，禁用静态生成
 export const dynamic = "force-dynamic";
 
-export default function Dashboard() {
+export default function Message() {
   const router = useRouter();
   const userId = useUserStore((s) => s.userId);
   const userRole = useUserStore((s) => s.role);
-  const [classrooms, setClassrooms] = useState(MOCK_CLASSROOMS);
   const [drawerState, setDrawerState] = useState<ChatDrawerState>({
     isOpen: false,
     mode: "private",
     targetId: "",
     targetName: "",
   });
-  const [showKickDialog, setShowKickDialog] = useState(false);
 
   const currentChannelRef = useRef<string | null>(null);
 
@@ -61,22 +58,6 @@ export default function Dashboard() {
       router.push("/");
       return;
     }
-
-    // 监听 linkState 事件，处理互踢
-    const handleLinkState = (eventData: any) => {
-      const { currentState, reasonCode } = eventData;
-
-      if (currentState === "FAILED" && reasonCode === "SAME_UID_LOGIN") {
-        // 显示互踢提示框
-        setShowKickDialog(true);
-      }
-    };
-
-    rtmEventEmitter.addListener("linkstate", handleLinkState);
-
-    return () => {
-      rtmEventEmitter.removeListener("linkstate", handleLinkState);
-    };
   }, [router]);
 
   const handlePrivateChatClick = (teacher: Teacher) => {
@@ -115,6 +96,7 @@ export default function Dashboard() {
     // 如果是频道模式，取消订阅
     if (drawerState.mode === "channel" && currentChannelRef.current) {
       try {
+        rtmEventEmitter.removeListener("message", handleChannelMessage);
         await unsubscribeChannel(currentChannelRef.current);
         currentChannelRef.current = null;
       } catch (error) {
@@ -161,24 +143,8 @@ export default function Dashboard() {
     }
   };
 
-  const handleRelogin = async () => {
-    try {
-      await rtmLogin();
-      setShowKickDialog(false);
-      console.log("重新登录成功");
-    } catch (error) {
-      console.error("重新登录失败:", error);
-      alert("重新登录失败，请刷新页面重试");
-    }
-  };
-
-  const handleDismiss = () => {
-    setShowKickDialog(false);
-    router.push("/");
-  };
-
   return (
-    <div className="dashboard-container">
+    <div className="message-container">
       <h1>RTM SDK Demo</h1>
 
       <div className="lists-container">
@@ -194,7 +160,7 @@ export default function Dashboard() {
           />
         )}
         <ClassroomList
-          classrooms={classrooms}
+          classrooms={MOCK_CLASSROOMS}
           onClassroomClick={handleClassroomClick}
         />
       </div>
@@ -205,24 +171,6 @@ export default function Dashboard() {
         onClose={handleCloseDrawer}
         onSendMessage={handleSendMessage}
       />
-
-      {/* 互踢提示对话框 */}
-      {showKickDialog && (
-        <div className="kick-dialog-overlay">
-          <div className="kick-dialog">
-            <h2>⚠️ 账号在其他设备登录</h2>
-            <p>检测到您的账号在其他设备登录，当前连接已断开。</p>
-            <div className="kick-dialog-buttons">
-              <button onClick={handleDismiss} className="btn-secondary">
-                我知道了
-              </button>
-              <button onClick={handleRelogin} className="btn-primary">
-                再次登录
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { mockLogin } from "../../shared/utils/auth";
+import { mockAppLogin } from "../../shared/utils/auth";
 import "./page.css";
 import { useUserStore } from "@/store/user";
 import { rtmEventEmitter } from "../../shared/rtm";
@@ -12,7 +12,6 @@ import { handleUserMessage } from "@/store/chat";
 export const dynamic = "force-dynamic";
 
 export default function Login() {
-  // const [username, setUsername] = useState("");
   const userId = useUserStore((s) => s.userId);
   const userRole = useUserStore((s) => s.role);
   const setUserId = useUserStore((s) => s.setUserId);
@@ -29,18 +28,20 @@ export default function Login() {
       return;
     }
 
-    setLoading(true);
-    setError("");
-
     try {
-      await mockLogin(userId, "password");
+      setLoading(true);
+      // 如需使用 rtm 点对点消息，登录前监听，以防漏掉消息
+      rtmEventEmitter.addListener("message", handleUserMessage);
+      await mockAppLogin(userId, "password");
+
       localStorage.setItem("username", userId);
       localStorage.setItem("token", "mock-token-" + Date.now());
-      router.push("/dashboard");
 
-      // 已全局在线，监听用户消息
-      rtmEventEmitter.addListener("message", handleUserMessage);
+      // 登录后跳转
+      router.push("/home");
     } catch (err) {
+      // 登录失败移除事件监听
+      rtmEventEmitter.removeListener("message", handleUserMessage);
       setError("Login failed. Please try again.");
       console.error(err);
     } finally {

@@ -37,9 +37,10 @@ export default function ChatDrawer({
 
   useEffect(() => {
     return () => {
+      // 退出聊天，清理消息监听
       rtmEventEmitter.removeListener("message", handleChannelMessage);
     };
-  }, [state.isOpen, state.mode]);
+  }, []);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;

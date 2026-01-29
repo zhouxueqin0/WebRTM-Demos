@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { mockLogin, mockLogout, isAuthenticated } from "../auth";
+import { mockAppLogin, mockAppLogout, isAuthenticated } from "../auth";
 import { mockLocalStorage } from "../../test-utils/setup";
 
 // Mock RTM module
@@ -27,13 +27,13 @@ describe("auth utils", () => {
   describe("mockLogin", () => {
     it("calls initRtm with username", async () => {
       const { initRtm } = await import("../../rtm");
-      await mockLogin("test-user", "password");
+      await mockAppLogin("test-user", "password");
       expect(initRtm).toHaveBeenCalledWith("test-user");
     });
 
     it("uses default username when not provided", async () => {
       const { initRtm } = await import("../../rtm");
-      await mockLogin();
+      await mockAppLogin();
       expect(initRtm).toHaveBeenCalledWith("test-demo");
     });
 
@@ -42,7 +42,7 @@ describe("auth utils", () => {
       const mockError = new Error("RTM connection failed");
       vi.mocked(initRtm).mockRejectedValueOnce(mockError);
 
-      await expect(mockLogin("user", "password")).rejects.toThrow(
+      await expect(mockAppLogin("user", "password")).rejects.toThrow(
         "RTM connection failed",
       );
     });
@@ -51,7 +51,7 @@ describe("auth utils", () => {
   describe("mockLogout", () => {
     it("removes token from localStorage", async () => {
       localStorage.setItem("token", "test-token");
-      await mockLogout();
+      await mockAppLogout();
       expect(localStorage.getItem("token")).toBeNull();
     });
   });

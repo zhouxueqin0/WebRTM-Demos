@@ -1,0 +1,126 @@
+.navbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.navbar-brand {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-brand h2 {
+  margin: 0;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.navbar-menu {
+  list-style: none;
+  padding: 20px 0;
+  margin: 0;
+  flex: 1;
+}
+
+.navbar-menu li {
+  margin: 0;
+}
+
+.navbar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.navbar-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.navbar-link.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-left-color: #3498db;
+  font-weight: 500;
+}
+
+.navbar-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+.navbar-label {
+  font-size: 15px;
+}
+
+.navbar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: 8px;
+  color: #e74c3c;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  background: rgba(231, 76, 60, 0.2);
+  border-color: rgba(231, 76, 60, 0.5);
+  color: #c0392b;
+}
+
+.logout-button .navbar-icon {
+  color: #e74c3c;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .navbar {
+    width: 60px;
+  }
+
+  .navbar-brand h2 {
+    font-size: 14px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .navbar-label {
+    display: none;
+  }
+
+  .navbar-link {
+    justify-content: center;
+    padding: 14px 10px;
+  }
+
+  .logout-button {
+    justify-content: center;
+    padding: 14px 10px;
+  }
+}

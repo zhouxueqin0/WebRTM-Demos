@@ -1,4 +1,10 @@
-import { getGlobalRtmClient, initRtm, RTMBaseError } from "../rtm";
+import {
+  getGlobalRtmClient,
+  initRtm,
+  releaseRtm,
+  RTMBaseError,
+  rtmEventEmitter,
+} from "../rtm";
 
 /**
  * Mock login function - now uses RTM login
@@ -6,8 +12,8 @@ import { getGlobalRtmClient, initRtm, RTMBaseError } from "../rtm";
  * @param password - User's password (optional, for future use)
  * @returns Promise that resolves when login is successful
  */
-export const mockLogin = async (
-  username = "test-demo",
+export const mockAppLogin = async (
+  username = "",
   password = "",
 ): Promise<void> => {
   try {
@@ -29,8 +35,11 @@ export const mockLogin = async (
  * Mock logout function
  * @returns Promise that resolves when logout is complete
  */
-export const mockLogout = async (): Promise<void> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+export const mockAppLogout = async (): Promise<void> => {
+  rtmEventEmitter.removeAllListeners();
+
+  await releaseRtm();
+
   // Clear any stored tokens
   if (typeof localStorage !== "undefined") {
     localStorage.removeItem("token");

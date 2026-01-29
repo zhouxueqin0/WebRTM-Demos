@@ -21,13 +21,16 @@
 ┌─────────────────────────────────────────────────────────┐
 │                    UI Layer (Pages)                     │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│  │  Login Page  │  │  Dashboard   │  │ ChatDrawer   │   │
-│  └──────┬───────┘  └──────┬───────┘  └───────┬──────┘   │
-│         │                 │                  │          │
-└─────────┼─────────────────┼──────────────────┼──────────┘
-          │                 │                  │
-┌─────────┼─────────────────┼──────────────────┼───────────┐
-│         │    State Layer (Zustand Stores)    │           │
+│  │  Login Page  │  │  Home Page   │  │ Message Page │   │
+│  └──────┬───────┘  └──────────────┘  └───────┬──────┘   │
+│         │                                    │          │
+│  ┌──────┴───────────────────────────────┬────┴──────┐   │
+│  │  GlobalEventHandler(互踢处理)         │ ChatDrawer │  │
+│  └──────────────────────────────────────┴───────────┘   │
+└─────────┼─────────────────────────────────────┼─────────┘
+          │                                     │
+┌─────────┼─────────────────────────────────────┼──────────┐
+│         │    State Layer (Zustand Stores)     │          │
 │  ┌──────▼───────┐  ┌──────▼───────┐  ┌───────▼──────┐    │
 │  │  User Store  │  │  Chat Store  │  │ Other Stores │    │
 │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘    │
@@ -45,14 +48,16 @@
 
 ### 2.2 核心组件
 
-| 组件              | 职责                      | 位置                       |
-| ----------------- | ------------------------- | -------------------------- |
-| **RTM Client**    | 单例 RTM 实例管理         | `shared/rtm/util.ts`       |
-| **RTM Events**    | 全局事件监听器（SDK 层）  | `shared/rtm/rtm-events.ts` |
-| **Event Emitter** | 事件总线，解耦 SDK 和业务 | `shared/rtm/util.ts`       |
-| **Message API**   | 消息发送/订阅封装         | `shared/rtm/message.ts`    |
-| **Chat Store**    | 消息状态管理 + 消息处理器 | `nextjs/store/chat.ts`     |
-| **User Store**    | 用户状态管理              | `nextjs/store/user.ts`     |
+| 组件                   | 职责                      | 位置                                           |
+| ---------------------- | ------------------------- | ---------------------------------------------- |
+| **RTM Client**         | 单例 RTM 实例管理         | `shared/rtm/util.ts`                           |
+| **RTM Events**         | 全局事件监听器（SDK 层）  | `shared/rtm/rtm-events.ts`                     |
+| **Event Emitter**      | 事件总线，解耦 SDK 和业务 | `shared/rtm/util.ts`                           |
+| **Message API**        | 消息发送/订阅封装         | `shared/rtm/message.ts`                        |
+| **Chat Store**         | 消息状态管理 + 消息处理器 | `nextjs/store/chat.ts`                         |
+| **User Store**         | 用户状态管理              | `nextjs/store/user.ts`                         |
+| **GlobalEventHandler** | 全局互踢事件处理          | `nextjs/app/components/GlobalEventHandler.tsx` |
+| **Navbar**             | 全局导航栏                | `nextjs/app/components/Navbar.tsx`             |
 
 ### 2.3 消息监听策略 ⭐
 
@@ -107,7 +112,12 @@ useEffect(() => {
     // 关闭时清理
     rtmEventEmitter.removeListener("message", handleChannelMessage);
   };
-}, [state.isOpen, state.mode]);
+}, []);
+// unsubscribe 调用前清理
+const handleCloseDrawer = async (classroom: Classroom) => {
+  rtmEventEmitter.removeListener("message", handleChannelMessage);
+  await unsubscribeChannel(classroom.id);
+};
 ```
 
 ---
@@ -134,7 +144,7 @@ sequenceDiagram
     RTMClient-->>AuthUtil: 登录成功
     AuthUtil->>UserStore: setUserId(userId)
     AuthUtil-->>LoginPage: 返回成功
-    LoginPage->>Router: 跳转到 /dashboard
+    LoginPage->>Router: 跳转到 /home
 ```
 
 ### 3.2 私有消息接收流程
@@ -522,7 +532,7 @@ export function initRtm(appId: string, userId: string): RTM {
 ```typescript
 async function exitApp() {
   await releaseRtm();
-  router.push('/');
+  router.push("/");
 }
 
 async function reLogin() {
@@ -532,7 +542,7 @@ async function reLogin() {
 function handleLinkState(eventData: RTMEvents.LinkStateEvent) {
   if (eventData.currentState === "FAILED") {
     if (eventData.reasonCode === "SAME_UID_LOGIN") {
-      showKickDialog('您的账号在其他设备登录, 是否重新登录？', {
+      showKickDialog("您的账号在其他设备登录, 是否重新登录？", {
         onOk: () => {
           // 策略 A：保留当前设备，重新登录
           reLogin();
@@ -540,7 +550,7 @@ function handleLinkState(eventData: RTMEvents.LinkStateEvent) {
         onCancel: () => {
           // 策略 B：保留新设备，退出当前设备
           exitApp();
-        }
+        },
       });
     }
   }
@@ -591,17 +601,46 @@ useEffect(() => {
   }
 }, []);
 
-// 4. 登出 App 或 root 组件销毁时：释放实例
-export function mockLogout() {
-  releaseRtm(); // 清理全局实例
-  globalRtmClient = null;
+// 4. 登出 App 同时退出 rtm
+export async function mockAppLogout() {
+  rtmEventEmitter.removeAllListeners();
+  await releaseRtm();
 }
-// app root component
-useEffect(() => {
-  return () => {
-    mockLogout();
-  }
-}, [])
+
+export default function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const navItems = [
+    { path: "/home", label: "Home", icon: "🏠" },
+    { path: "/message", label: "Message", icon: "💬" },
+    { path: "/more", label: "More", icon: "⋯" },
+  ];
+
+  const handleLogout = async () => {
+    try {
+      await mockAppLogout();
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // 即使出错也跳转到登录页
+      router.push("/");
+    }
+  };
+
+  return (
+    <nav className="navbar">
+      <div className="navbar-footer">
+        <button onClick={handleLogout} className="logout-button">
+          <span className="navbar-icon">🚪</span>
+          <span className="navbar-label">Logout</span>
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+
 ```
 
 ---
@@ -621,11 +660,18 @@ demos/
 │
 └── nextjs/
 │    ├── app/
+│    │   ├── layout.tsx            # 根布局（集成 GlobalEventHandler 和 Navbar）
 │    │   ├── page.tsx              # 登录页（初始并登录 RTM）
-│    │   ├── dashboard/
-│    │   │   └── page.tsx          # 主页（根据需要订阅事件，收到事件更新 store 数据）⭐
+│    │   ├── home/
+│    │   │   └── page.tsx          # Home 页面
+│    │   ├── message/
+│    │   │   └── page.tsx          # Message 页面（原 dashboard，聊天功能）⭐
+│    │   ├── more/
+│    │   │   └── page.tsx          # More 页面
 │    │   └── components/
-│    │       └── ChatDrawer.tsx    # 聊天抽屉
+│    │       ├── GlobalEventHandler.tsx  # 全局互踢事件处理 ⭐
+│    │       ├── Navbar.tsx              # 全局导航栏
+│    │       └── ChatDrawer.tsx          # 聊天抽屉
 │    │
 │    └── store/
 │        ├── user.ts               # 用户状态
@@ -636,7 +682,8 @@ demos/
 **关键文件**：
 
 - ⭐ `rtm-events.ts`：全局事件监听器，处理所有 RTM 事件
-- ⭐ `dashboard/page.tsx`：业务层订阅事件
+- ⭐ `GlobalEventHandler.tsx`：全局互踢事件处理组件
+- ⭐ `message/page.tsx`：消息页面，业务层订阅事件
 - ⭐ `chat.ts`：消息状态管理 + 消息处理函数
 
 ---
@@ -673,7 +720,7 @@ export default function Login() {
       rtmEventEmitter.addListener("message", handleUserMessage);
 
       // 3. 跳转到主页
-      router.push("/dashboard");
+      router.push("/home");
     } catch (err) {
       console.error("Login failed:", err);
     } finally {
@@ -692,33 +739,22 @@ export default function Login() {
 }
 ```
 
-### 7.2 Dashboard 页 - 注册 linkState 监听处理互踢
+### 7.2 GlobalEventHandler - 全局互踢事件处理
 
 ```typescript
-// app/dashboard/page.tsx
+// app/components/GlobalEventHandler.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  getGlobalRtmClient,
-  rtmEventEmitter,
-  rtmLogin,
-} from "../../../shared/rtm";
+import { useRouter, usePathname } from "next/navigation";
+import { rtmEventEmitter, rtmLogin } from "../../../shared/rtm";
+import "./GlobalEventHandler.css";
 
-export default function Dashboard() {
+export default function GlobalEventHandler() {
   const router = useRouter();
   const [showKickDialog, setShowKickDialog] = useState(false);
 
   useEffect(() => {
-    // 检查 RTM 是否已初始化
-    try {
-      getGlobalRtmClient();
-    } catch (e) {
-      router.push("/");
-      return;
-    }
-
     // ⭐ 监听 linkState 事件，处理互踢
     const handleLinkState = (eventData: any) => {
       const { currentState, reasonCode } = eventData;
@@ -729,14 +765,13 @@ export default function Dashboard() {
       }
     };
 
-    rtmEventEmitter.addListener("linkState", handleLinkState);
+    rtmEventEmitter.addListener("linkstate", handleLinkState);
 
     return () => {
-      rtmEventEmitter.removeListener("linkState", handleLinkState);
+      rtmEventEmitter.removeListener("linkstate", handleLinkState);
     };
-  }, [router]);
+  }, []);
 
-  // 重新登录处理
   const handleRelogin = async () => {
     try {
       await rtmLogin();
@@ -748,32 +783,29 @@ export default function Dashboard() {
     }
   };
 
-  // 关闭对话框
   const handleDismiss = () => {
     setShowKickDialog(false);
+    router.push("/");
   };
 
-  return (
-    <div>
-      {/* Dashboard Content */}
+  if (!showKickDialog) {
+    return null;
+  }
 
-      {/* ⭐ 互踢提示对话框 */}
-      {showKickDialog && (
-        <div className="kick-dialog-overlay">
-          <div className="kick-dialog">
-            <h2>⚠️ 账号在其他设备登录</h2>
-            <p>检测到您的账号在其他设备登录，当前连接已断开。</p>
-            <div className="kick-dialog-buttons">
-              <button onClick={handleDismiss} className="btn-secondary">
-                我知道了
-              </button>
-              <button onClick={handleRelogin} className="btn-primary">
-                再次登录
-              </button>
-            </div>
-          </div>
+  return (
+    <div className="kick-dialog-overlay">
+      <div className="kick-dialog">
+        <h2>⚠️ 账号在其他设备登录</h2>
+        <p>检测到您的账号在其他设备登录，当前连接已断开。</p>
+        <div className="kick-dialog-buttons">
+          <button onClick={handleDismiss} className="btn-secondary">
+            我知道了
+          </button>
+          <button onClick={handleRelogin} className="btn-primary">
+            再次登录
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -781,22 +813,58 @@ export default function Dashboard() {
 
 **关键点**：
 
-- ✅ 在 Dashboard 页面注册 linkState 监听（全局生命周期）
+- ✅ 在 layout.tsx 中全局引入，所有页面都会加载
 - ✅ 检测到 `SAME_UID_LOGIN` 时显示对话框
-- ✅ 提供两个选项："我知道了"（关闭对话框）和"再次登录"（踢掉其他设备）
-- ✅ 重新登录成功后自动关闭对话框
+- ✅ 提供两个选项："我知道了"（跳转登录页）和"再次登录"（踢掉其他设备）
 
-### 7.3 Dashboard 页 - 检查 RTM 状态
+### 7.3 Layout - 集成全局组件
 
 ```typescript
-// app/dashboard/page.tsx
+// app/layout.tsx
+"use client";
+
+import { usePathname } from "next/navigation";
+import Navbar from "./components/Navbar";
+import GlobalEventHandler from "./components/GlobalEventHandler";
+import "./globals.css";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+
+  // 登录页面不显示导航栏
+  const showNavbar = pathname !== "/";
+
+  return (
+    <html lang="en">
+      <body>
+        {/* ⭐ 全局互踢事件处理 */}
+        <GlobalEventHandler />
+        {/* ⭐ 全局导航栏（登录后显示） */}
+        {showNavbar && <Navbar />}
+        <main style={showNavbar ? { marginLeft: "200px" } : {}}>
+          {children}
+        </main>
+      </body>
+    </html>
+  );
+}
+```
+
+### 7.4 Message 页 - 检查 RTM 状态
+
+```typescript
+// app/message/page.tsx
 "use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getGlobalRtmClient } from "../../../shared/rtm";
 
-export default function Dashboard() {
+export default function Message() {
   const router = useRouter();
 
   useEffect(() => {
@@ -812,15 +880,15 @@ export default function Dashboard() {
   // 私有消息已在登录页注册全局监听
   // 频道消息会在 ChatDrawer 中按需监听
 
-  return <div>Dashboard Content</div>;
+  return <div>Message Content</div>;
 }
 ```
 
-### 7.4 ChatDrawer - 注册频道消息监听
+### 7.5 ChatDrawer - 注册频道消息监听
 
 ```typescript
 'use client';
-// app/dashboard/page.tsx
+// app/message/page.tsx
 const handleClassroomClick = async (classroom: Classroom) => {
   // 订阅前监听，确保不漏消息
   rtmEventEmitter.addListener('message', handleChannelMessage);
@@ -861,7 +929,7 @@ export default function ChatDrawer({ state, ... }: ChatDrawerProps) {
 }
 ```
 
-### 7.5 Chat Store - 消息处理函数
+### 7.6 Chat Store - 消息处理函数
 
 ```typescript
 // store/chat.ts
@@ -935,7 +1003,7 @@ export const handleChannelMessage = (eventData: any) => {
 };
 ```
 
-### 7.6 发送消息
+### 7.7 发送消息
 
 ```typescript
 import { sendMessageToUser, sendChannelMessage } from "../../../shared/rtm";
@@ -1026,7 +1094,8 @@ useEffect(() => {
 - ✅ 使用单例模式管理 RTM 实例
 - ✅ 在 `shared/rtm/rtm-events.ts` 中注册全局事件监听器
 - ✅ 页面切换时复用实例，不要重复登录
-- ✅ **在 Dashboard 页面监听 `linkState` 事件处理互踢**
+- ✅ **使用 GlobalEventHandler 组件全局监听 `linkState` 事件处理互踢**
+- ✅ 在 layout.tsx 中引入 GlobalEventHandler，所有页面自动生效
 - ✅ 提供用户选择："我知道了" 或 "再次登录"
 
 **消息监听策略**：
@@ -1040,7 +1109,10 @@ useEffect(() => {
 
 ```
 登录流程：
-Login Page → initRtm() → 注册全局监听 → 注册私有消息监听 → Dashboard
+Login Page → initRtm() → 注册全局监听 → 注册私有消息监听 → Home Page
+
+全局互踢处理：
+GlobalEventHandler (layout.tsx) → 监听 linkState → 检测 SAME_UID_LOGIN → 显示对话框
 
 私有消息流程：
 RTM Server → SDK → RTM Events → EventEmitter → handleUserMessage → Chat Store → UI
@@ -1053,10 +1125,6 @@ RTM Server → SDK → RTM Events → EventEmitter → handleChannelMessage → 
 
 ---
 
-**文档版本**：v1.2  
-**最后更新**：2026-01-28  
-**维护者**：AI Agent  
-**变更说明**：
-
-- v1.1: 添加分层消息监听策略，区分私有消息和频道消息的不同处理方式
-- v1.2: 添加互踢处理实现，提供用户选择对话框
+**文档版本**：v1.0  
+**最后更新**：2026-01-29  
+**维护者**：AI Agent
