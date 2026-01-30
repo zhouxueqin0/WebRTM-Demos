@@ -31,6 +31,8 @@
 
 ## 待办（带复选框）
 
+### Next.js Demo（已完成）
+
 - [x] 安装 zustand 依赖
 - [x] 创建类型定义（User, Classroom, Message）
 - [x] 创建 Mock 数据（5 老师 + 3 课程 + 5 学生）
@@ -46,20 +48,32 @@
 - [x] 修复 Hook 调用错误（使用 getState()）
 - [x] 更新 AGENTS.md 文档
 - [x] **实现互踢处理逻辑**
-  - [x] 在 Dashboard 注册 linkState 监听
-  - [x] 检测到 SAME_UID_LOGIN 时显示提示框
-  - [x] 提供两个选项："我知道了" 和 "再次登录"
-  - [x] 导出 rtmLogin 函数供重新登录使用
-  - [x] 更新文档说明互踢处理实现
 - [x] **添加全局导航栏（Next.js demo）**
-  - [x] 创建 Navbar 组件（固定在左侧）
-  - [x] 创建 home 页面（显示 "Hello World"）
-  - [x] 将 dashboard 重命名为 message 页面（保留原有聊天功能）
-  - [x] 创建 more 页面（显示 "请自行补充其他业务功能"）
-  - [x] 实现路由高亮逻辑（当前页面 active 状态）
-  - [x] 修改登录跳转逻辑（跳转到 /home）
-  - [x] 更新布局文件集成导航栏
-- [ ] 用户测试验证功能
+
+### Nuxt Demo（对齐 Next.js 功能）
+
+- [x] 1. 更新 package.json（添加 agora-rtm、@pinia/nuxt 等依赖）
+- [x] 2. 创建类型定义（types/user.ts, types/chat.ts）
+- [x] 3. 创建 Mock 数据（mocks/data.ts）
+- [x] 4. 创建 Pinia stores（stores/chat.ts, stores/user.ts）
+- [x] 5. 创建登录页面（pages/index.vue - 含角色选择）
+- [x] 6. 创建 Home 页面（pages/home.vue）
+- [x] 7. 创建 Message 页面（pages/message.vue）
+- [x] 8. 创建 More 页面（pages/more.vue）
+- [x] 9. 创建 Navbar 组件（components/Navbar.vue）
+- [x] 10. 创建 ChatDrawer 组件（components/ChatDrawer.vue）
+- [x] 11. 创建 TeacherList 组件（components/TeacherList.vue）
+- [x] 12. 创建 StudentList 组件（components/StudentList.vue）
+- [x] 13. 创建 ClassroomList 组件（components/ClassroomList.vue）
+- [x] 14. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.vue）
+- [x] 15. 更新 app.vue（集成布局和全局组件）
+- [x] 16. 更新 nuxt.config.ts（配置 Pinia、环境变量等）
+- [x] 17. 创建测试文件
+- [x] 18. 修复导入路径（shared 目录相对路径）
+- [x] 19. 创建 tsconfig.json
+- [ ] 20. 提交代码
+- [ ] 21. 安装依赖并测试运行
+- [ ] 22. 用户测试验证功能
 
 ## 已完成/变更摘要（PR 可直接使用）
 
