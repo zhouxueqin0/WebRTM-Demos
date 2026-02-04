@@ -2,10 +2,10 @@
 
 ## 目标
 
-- 为 Next.js demo 实现完整的 RTM 聊天功能
-- 支持 Teacher 和 Student 两种角色
-- 实现私聊和频道消息功能
-- 使用 Zustand 状态管理，抽屉组件展示聊天界面
+- 补全 H5 demo，展示 RTM 在轻量级 React 项目中的最佳集成
+- 技术栈：React 18 + Vite + Jotai + React Router + Less
+- 功能对齐 Next.js demo：登录、角色切换、私聊、频道消息
+- 展示原子化状态管理（Jotai）与集中式状态管理（Zustand）的差异
 
 ## 上下文总结
 
@@ -30,6 +30,34 @@
 - Next.js 页面必须标记 `'use client'` 和 `export const dynamic = 'force-dynamic'`
 
 ## 待办（带复选框）
+
+### H5 Demo（补全中）
+
+- [x] 1. 更新 package.json（添加 React、Jotai、React Router、Less 等依赖）
+- [x] 2. 更新 vite.config.ts（配置 React 插件、Less 支持、UMD 兼容）
+- [x] 3. 创建类型定义（types/user.ts, types/chat.ts）
+- [x] 4. 创建 Mock 数据（mocks/data.ts）
+- [x] 5. 创建 Jotai atoms（store/user.ts, store/chat.ts）
+- [x] 6. 创建 App.tsx（根组件 + 路由配置）
+- [x] 7. 创建登录页面（pages/Login.tsx + Login.less）
+- [x] 8. 创建 Home 页面（pages/Home.tsx + Home.less）
+- [x] 9. 创建 Message 页面（pages/Message.tsx + Message.less）
+- [x] 10. 创建 More 页面（pages/More.tsx + More.less）
+- [x] 11. 创建 Navbar 组件（components/Navbar.tsx）
+- [x] 12. 创建 ChatDrawer 组件（components/ChatDrawer.tsx）
+- [x] 13. 创建 TeacherList 组件（components/TeacherList.tsx）
+- [x] 14. 创建 StudentList 组件（components/StudentList.tsx）
+- [x] 15. 创建 ClassroomList 组件（components/ClassroomList.tsx）
+- [x] 16. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.tsx）
+- [x] 17. 更新 main.tsx（React 入口 + 环境变量 polyfill）
+- [x] 18. 更新 index.html（检查配置）
+- [x] 19. 创建全局样式（App.less）
+- [x] 20. 创建测试文件
+- [x] 21. 创建环境变量 polyfill（utils/env-polyfill.ts）
+- [x] 22. 修复生产构建 EventEmitter 问题（创建自定义 EventEmitter 实现）
+- [ ] 23. 提交代码
+- [ ] 24. 安装依赖并测试运行
+- [ ] 25. 更新 AGENTS.md 文档（H5 技术栈说明）
 
 ### Next.js Demo（已完成）
 

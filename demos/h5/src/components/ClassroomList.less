@@ -1,0 +1,41 @@
+.classroom-list-container {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .classroom-list-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .classroom-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .classroom-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #f7fafc;
+      }
+
+      .classroom-icon {
+        font-size: 2rem;
+      }
+
+      .classroom-name {
+        flex: 1;
+        color: #333;
+      }
+    }
+  }
+}
