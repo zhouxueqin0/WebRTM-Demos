@@ -50,7 +50,30 @@
 - [x] 15. 更新 vite.config.ts（alias + env）
 - [x] 16. 更新测试文件（Login.spec.ts, Home.spec.ts）
 - [ ] 17. 测试运行
+- [x] 18. 提交代码
+
+### Vue Webpack Demo（对齐 Next.js 功能）
+
+- [x] 1. 更新 package.json（添加 pinia、agora-rtm、events）
+- [x] 2. 创建类型定义（types/user.ts, types/chat.ts）
+- [x] 3. 创建 Mock 数据（mocks/data.ts）
+- [x] 4. 创建 Pinia stores（stores/user.ts, stores/chat.ts）
+- [x] 5. 更新登录页面（views/Login.vue - 含角色选择）
+- [x] 6. 创建 Home 页面（views/Home.vue）
+- [x] 7. 创建 Message 页面（views/Message.vue）
+- [x] 8. 创建 More 页面（views/More.vue）
+- [x] 9. 创建 Navbar 组件（components/Navbar.vue）
+- [x] 10. 创建 ChatDrawer 组件（components/ChatDrawer.vue）
+- [x] 11. 创建 TeacherList/StudentList/ClassroomList 组件
+- [x] 12. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.vue）
+- [x] 13. 更新 App.vue（布局 + 全局组件）
+- [x] 14. 更新 main.ts（路由配置 + Pinia）
+- [x] 15. 更新 webpack.config.ts（alias + historyApiFallback）
+- [x] 16. 更新测试文件（Login.spec.js, Home.spec.js）
+- [ ] 17. 测试运行
 - [ ] 18. 提交代码
+  - 备注：当前 build 跳过 vue-tsc（Node 22 兼容性问题）
+  - 备注：ts-loader 已设置为 transpileOnly 以避免 shared 类型报错
 
 ### H5 Demo（补全中）
 

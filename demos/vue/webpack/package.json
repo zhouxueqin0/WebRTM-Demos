@@ -3,16 +3,20 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "webpack serve --mode development",
-    "build": "vue-tsc && webpack --mode production",
+    "build": "webpack --mode production",
     "test": "vitest --run",
     "test:watch": "vitest",
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "agora-rtm": "^2.2.2",
+    "events": "^3.3.0",
+    "pinia": "^2.1.7",
     "vue": "^3.4.0",
     "vue-router": "^4.2.0"
   },
   "devDependencies": {
+    "@types/dotenv-webpack": "^7.0.8",
     "@types/node": "^20.0.0",
     "@types/webpack": "^5.28.0",
     "@vue/compiler-sfc": "^3.4.0",
@@ -23,7 +27,8 @@
     "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.0",
     "ts-loader": "^9.5.0",
-    "typescript": "^5.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
     "vite": "^5.0.0",
     "vitest": "^1.0.0",
     "vue-loader": "^17.3.0",
