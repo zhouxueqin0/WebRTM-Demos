@@ -31,6 +31,27 @@
 
 ## 待办（带复选框）
 
+### Vue Vite Demo（对齐 Next.js 功能）
+
+- [x] 1. 更新 package.json（添加 pinia、agora-rtm、events）
+- [x] 2. 创建类型定义（types/user.ts, types/chat.ts）
+- [x] 3. 创建 Mock 数据（mocks/data.ts）
+- [x] 4. 创建 Pinia stores（stores/user.ts, stores/chat.ts）
+- [x] 5. 更新登录页面（views/Login.vue - 含角色选择）
+- [x] 6. 创建 Home 页面（views/Home.vue）
+- [x] 7. 创建 Message 页面（views/Message.vue）
+- [x] 8. 创建 More 页面（views/More.vue）
+- [x] 9. 创建 Navbar 组件（components/Navbar.vue）
+- [x] 10. 创建 ChatDrawer 组件（components/ChatDrawer.vue）
+- [x] 11. 创建 TeacherList/StudentList/ClassroomList 组件
+- [x] 12. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.vue）
+- [x] 13. 更新 App.vue（布局 + 全局组件）
+- [x] 14. 更新 main.ts（路由配置 + Pinia）
+- [x] 15. 更新 vite.config.ts（alias + env）
+- [x] 16. 更新测试文件（Login.spec.ts, Home.spec.ts）
+- [ ] 17. 测试运行
+- [ ] 18. 提交代码
+
 ### H5 Demo（补全中）
 
 - [x] 1. 更新 package.json（添加 React、Jotai、React Router、Less 等依赖）
@@ -118,25 +139,21 @@
 **关键变更**：
 
 1. **用户系统**：
-
    - 新增 `types/user.ts` 定义 User 类型（支持 teacher/student 角色）
    - 新增 `store/user.ts` 管理用户状态（userId, role）
    - 登录页面添加角色单选按钮（Teacher / Student）
 
 2. **组件扩展**：
-
    - 新增 `StudentList` 组件（与 TeacherList 对应）
    - 更新 `TeacherList` 使用统一的 User 类型
    - Dashboard 根据角色显示不同列表
 
 3. **RTM 事件管理重构**：
-
    - shared/rtm 添加 `rtmEventEmitter` (EventEmitter)
    - 统一事件管理：message, linkState 等
    - 修复 Hook 调用错误：`handleMessage` 使用 `getState()`
 
 4. **性能优化**：
-
    - 修复 useEffect 依赖问题，确保只执行一次
    - 事件监听器使用 EventEmitter 模式，避免重复注册
 
