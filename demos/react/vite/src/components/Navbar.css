@@ -1,0 +1,93 @@
+.navbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  background: #2d3748;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.navbar-brand {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-brand h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.navbar-menu {
+  flex: 1;
+  list-style: none;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.navbar-menu li {
+  margin: 0;
+}
+
+.navbar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-align: left;
+}
+
+.navbar-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.navbar-link.active {
+  background: rgba(102, 126, 234, 0.2);
+  color: white;
+  border-left: 3px solid #667eea;
+}
+
+.navbar-icon {
+  font-size: 1.25rem;
+}
+
+.navbar-label {
+  font-size: 0.95rem;
+}
+
+.navbar-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.logout-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}

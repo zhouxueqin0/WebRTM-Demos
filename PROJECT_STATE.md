@@ -59,6 +59,33 @@
 - [ ] 24. 安装依赖并测试运行
 - [ ] 25. 更新 AGENTS.md 文档（H5 技术栈说明）
 
+### React Vite Demo（对齐 Next.js 功能）
+
+- [x] 1. 更新 package.json（添加 zustand、agora-rtm 等依赖）
+- [x] 2. 创建类型定义（types/user.ts, types/chat.ts）
+- [x] 3. 创建 Mock 数据（mocks/data.ts）
+- [x] 4. 创建 Zustand stores（store/user.ts, store/chat.ts）
+- [x] 5. 更新登录页面（pages/Login.tsx + Login.css - 含角色选择）
+- [x] 6. 创建 Home 页面（pages/Home.tsx + Home.css）
+- [x] 7. 创建 Message 页面（pages/Message.tsx + Message.css）
+- [x] 8. 创建 More 页面（pages/More.tsx + More.css）
+- [x] 9. 创建 Navbar 组件（components/Navbar.tsx + Navbar.css）
+- [x] 10. 创建 ChatDrawer 组件（components/ChatDrawer.tsx + ChatDrawer.css）
+- [x] 11. 创建 TeacherList 组件（components/TeacherList.tsx + TeacherList.css）
+- [x] 12. 创建 StudentList 组件（components/StudentList.tsx + StudentList.css）
+- [x] 13. 创建 ClassroomList 组件（components/ClassroomList.tsx + ClassroomList.css）
+- [x] 14. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.tsx + GlobalEventHandler.css）
+- [x] 15. 更新 main.tsx（路由配置 + 布局）
+- [x] 16. 更新测试文件（Login.test.tsx, Home.test.tsx）
+- [x] 17. 修复 shared 路径（../../../../shared/）
+- [x] 18. 修复 index.html 入口文件（main.tsx）
+- [x] 19. 配置 Vite alias 解析 agora-rtm（避免在 shared 安装）
+- [ ] 20. 创建 .env 文件
+- [ ] 21. 测试运行
+- [ ] 22. 提交代码
+  - 备注：修复消息重复展示（避免本地+回执双写，过滤私聊回执）
+  - 备注：ChatDrawer header 按钮占位调整
+
 ### Next.js Demo（已完成）
 
 - [x] 安装 zustand 依赖
