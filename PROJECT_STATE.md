@@ -145,25 +145,21 @@
 **关键变更**：
 
 1. **用户系统**：
-
    - 新增 `types/user.ts` 定义 User 类型（支持 teacher/student 角色）
    - 新增 `store/user.ts` 管理用户状态（userId, role）
    - 登录页面添加角色单选按钮（Teacher / Student）
 
 2. **组件扩展**：
-
    - 新增 `StudentList` 组件（与 TeacherList 对应）
    - 更新 `TeacherList` 使用统一的 User 类型
    - Dashboard 根据角色显示不同列表
 
 3. **RTM 事件管理重构**：
-
    - shared/rtm 添加 `rtmEventEmitter` (EventEmitter)
    - 统一事件管理：message, linkState 等
    - 修复 Hook 调用错误：`handleMessage` 使用 `getState()`
 
 4. **性能优化**：
-
    - 修复 useEffect 依赖问题，确保只执行一次
    - 事件监听器使用 EventEmitter 模式，避免重复注册
 

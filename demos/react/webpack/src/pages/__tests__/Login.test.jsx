@@ -1,24 +1,21 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import Login from '../Login'
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import Login from "../Login";
 
-const mockNavigate = vi.fn()
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom')
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate
-  }
-})
-
-describe('Login', () => {
-  it('renders login button', () => {
+describe("Login", () => {
+  it("renders login form", () => {
     render(
       <BrowserRouter>
         <Login />
-      </BrowserRouter>
-    )
-    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument()
-  })
-})
+      </BrowserRouter>,
+    );
+    expect(screen.getByText("RTM SDK Demo")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /login to app/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("User ID")).toBeInTheDocument();
+    expect(screen.getByLabelText("Teacher")).toBeInTheDocument();
+    expect(screen.getByLabelText("Student")).toBeInTheDocument();
+  });
+});

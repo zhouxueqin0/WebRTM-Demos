@@ -1,12 +1,17 @@
 import path from "path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import Dotenv from "dotenv-webpack";
-import type { Configuration } from "webpack";
+import type { Configuration as WebpackConfiguration } from "webpack";
+import type { Configuration as WebpackDevServerConfiguration } from "webpack-dev-server";
+
+interface Configuration extends WebpackConfiguration {
+  devServer?: WebpackDevServerConfiguration;
+}
 
 const config: Configuration = {
   entry: "./src/index.tsx",
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(import.meta.dirname, "dist"),
     filename: "bundle.js",
     clean: true,
   },
@@ -17,6 +22,9 @@ const config: Configuration = {
         exclude: /node_modules/,
         use: {
           loader: "ts-loader",
+          options: {
+            transpileOnly: true,
+          },
         },
       },
       {
@@ -30,7 +38,10 @@ const config: Configuration = {
       template: "./public/index.html",
     }),
     new Dotenv({
+      path: path.resolve(import.meta.dirname, ".env"),
       systemvars: true,
+      safe: false,
+      defaults: false,
     }),
   ],
   devServer: {
@@ -40,6 +51,12 @@ const config: Configuration = {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
+    alias: {
+      "agora-rtm": path.resolve(import.meta.dirname, "node_modules/agora-rtm"),
+    },
+    fallback: {
+      events: path.resolve(import.meta.dirname, "node_modules/events"),
+    },
   },
 };
 
