@@ -7,14 +7,18 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "electron": "electron .",
+    "electron:dev": "NODE_ENV=development npm run electron",
     "test": "vitest --run",
     "test:watch": "vitest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "agora-rtm": "^2.2.3-2",
+    "events": "^3.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0"
+    "react-router-dom": "^6.20.0",
+    "zustand": "^5.0.10"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.0",

@@ -2,10 +2,10 @@
 
 ## 目标
 
-- 补全 H5 demo，展示 RTM 在轻量级 React 项目中的最佳集成
-- 技术栈：React 18 + Vite + Jotai + React Router + Less
-- 功能对齐 Next.js demo：登录、角色切换、私聊、频道消息
-- 展示原子化状态管理（Jotai）与集中式状态管理（Zustand）的差异
+- **[当前]** 从零到一实现 Electron React demo，复刻 Next.js demo 的所有功能
+- 技术栈：Electron + React 18 + Vite + Zustand + React Router + CSS
+- 功能对齐 Next.js demo：登录、角色切换、私聊、频道消息、导航栏
+- 确保 `npm run dev` 能正常运行（Vite dev server + Electron）
 
 ## 上下文总结
 
@@ -31,7 +31,37 @@
 
 ## 待办（带复选框）
 
-### H5 Demo（补全中）
+### Electron React Demo（校验中）
+
+- [x] 1. 更新 package.json（添加 agora-rtm, zustand, react-router-dom, events 等依赖）
+- [x] 2. 创建类型定义（types/user.ts, types/chat.ts）
+- [x] 3. 创建 Mock 数据（mocks/data.ts）
+- [x] 4. 创建 Zustand stores（store/user.ts, store/chat.ts）
+- [x] 5. 创建 App.tsx（根组件 + React Router 配置）
+- [x] 6. 创建登录页面（pages/Login.tsx + Login.css）
+- [x] 7. 创建 Home 页面（pages/Home.tsx + Home.css）
+- [x] 8. 创建 Message 页面（pages/Message.tsx + Message.css）
+- [x] 9. 创建 More 页面（pages/More.tsx + More.css）
+- [x] 10. 创建 Navbar 组件（components/Navbar.tsx + Navbar.css）
+- [x] 11. 创建 ChatDrawer 组件（components/ChatDrawer.tsx + ChatDrawer.css）
+- [x] 12. 创建 TeacherList 组件（components/TeacherList.tsx + TeacherList.css）
+- [x] 13. 创建 StudentList 组件（components/StudentList.tsx + StudentList.css）
+- [x] 14. 创建 ClassroomList 组件（components/ClassroomList.tsx + ClassroomList.css）
+- [x] 15. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.tsx + GlobalEventHandler.css）
+- [x] 16. 更新 main.tsx（React 入口）
+- [x] 17. 创建全局样式（App.css）
+- [x] 18. 创建 README.md
+- [x] 19. 检查 vite.config.ts（已配置 process.env 支持）
+- [x] 20. 检查 main.js（已配置好）
+- [x] 21. 创建测试文件（Login.test.jsx, Home.test.tsx）
+- [x] 22. 修复启动问题（更新 index.html 入口文件）
+- [x] 23. 修复 process.env 问题（配置 vite.config.ts）
+- [x] 24. 修复 EventEmitter 问题（添加 events 依赖）
+- [x] 25. 创建 ELECTRON_RTM_INTEGRATION.md 文档
+- [ ] 26. 用户验证功能是否正常
+- [ ] 27. 提交代码
+
+### H5 Demo（已完成）
 
 - [x] 1. 更新 package.json（添加 React、Jotai、React Router、Less 等依赖）
 - [x] 2. 更新 vite.config.ts（配置 React 插件、Less 支持、UMD 兼容）
