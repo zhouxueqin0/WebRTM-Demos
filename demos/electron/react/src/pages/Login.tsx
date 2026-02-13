@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockAppLogin } from "../../../../shared/utils/auth";
-import "./Login.css";
+import "./Login.less";
 import { useUserStore } from "../store/user";
 import { rtmEventEmitter } from "../../../../shared/rtm";
 import { handleUserMessage } from "../store/chat";
@@ -45,7 +45,7 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
+    <div className="login">
       <div className="login-card">
         <h1>RTM SDK Demo</h1>
         <form onSubmit={handleLogin}>
@@ -91,7 +91,7 @@ export default function Login() {
               </label>
             </div>
           </div>
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className="error">{error}</div>}
           <button type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login to App"}
           </button>

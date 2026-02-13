@@ -1,0 +1,63 @@
+@import './variables.less';
+
+// 公共列表样式 mixin
+.list-container() {
+  flex: 1;
+  padding: @spacing-lg;
+  background: @bg-gray;
+  border-radius: @border-radius-md;
+}
+
+.list-title() {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: @spacing-md;
+  color: @text-color;
+}
+
+.list-items() {
+  display: flex;
+  flex-direction: column;
+  gap: @spacing-sm;
+}
+
+.list-item() {
+  display: flex;
+  align-items: center;
+  gap: @spacing-sm;
+  padding: @spacing-sm @spacing-md;
+  background: @white;
+  border-radius: @border-radius-sm;
+  cursor: pointer;
+  transition: all @transition-fast;
+  position: relative;
+
+  &:hover {
+    background: #e8f4ff;
+    transform: translateX(4px);
+  }
+}
+
+.list-avatar() {
+  font-size: 24px;
+}
+
+.list-name() {
+  flex: 1;
+  font-size: 16px;
+  color: @text-color;
+}
+
+.list-badge() {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #ff4d4f;
+  color: @white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+}

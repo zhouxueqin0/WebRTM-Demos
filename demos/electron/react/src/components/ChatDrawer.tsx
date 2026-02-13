@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { ChatDrawerState, Message } from "../types/chat";
 import { handleChannelMessage, useChatStore } from "../store/chat";
-import "./ChatDrawer.css";
+import "./ChatDrawer.less";
 import { rtmEventEmitter } from "../../../../shared/rtm";
 
 interface ChatDrawerProps {
@@ -61,7 +61,7 @@ export default function ChatDrawer({
       />
       <div className={`chat-drawer ${state.isOpen ? "open" : ""}`}>
         <div className="chat-drawer-header">
-          <button className="chat-drawer-back-button" onClick={onClose}>
+          <button className="chat-drawer-back" onClick={onClose}>
             ←
           </button>
           <div className="chat-drawer-header-title">
@@ -99,7 +99,7 @@ export default function ChatDrawer({
             onKeyPress={handleKeyPress}
           />
           <button
-            className="chat-drawer-send-button"
+            className="chat-drawer-send"
             onClick={handleSend}
             disabled={!inputValue.trim()}
           >

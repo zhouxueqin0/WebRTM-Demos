@@ -1,6 +1,6 @@
 import type { User as Teacher } from "../types/user";
 import { useChatStore } from "../store/chat";
-import "./TeacherList.css";
+import "./TeacherList.less";
 
 interface TeacherListProps {
   teachers: Teacher[];
@@ -14,22 +14,20 @@ export default function TeacherList({
   const unreadCounts = useChatStore((state) => state.unreadCounts);
 
   return (
-    <div className="teacher-list-container">
-      <h2 className="teacher-list-title">Teacher List</h2>
+    <div className="teacher">
+      <h2 className="teacher-title">Teacher List</h2>
       <div className="teacher-list">
         {teachers.map((teacher) => {
           const unread = unreadCounts[teacher.userId] || 0;
           return (
             <div
               key={teacher.userId}
-              className="teacher-list-item"
+              className="teacher-item"
               onClick={() => onTeacherClick(teacher)}
             >
-              <span className="teacher-list-avatar">{teacher.avatar}</span>
-              <span className="teacher-list-name">{teacher.name}</span>
-              {unread > 0 && (
-                <span className="teacher-list-badge">{unread}</span>
-              )}
+              <span className="teacher-avatar">{teacher.avatar}</span>
+              <span className="teacher-name">{teacher.name}</span>
+              {unread > 0 && <span className="teacher-badge">{unread}</span>}
             </div>
           );
         })}

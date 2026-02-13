@@ -5,7 +5,7 @@ import Message from "./pages/Message";
 import More from "./pages/More";
 import Navbar from "./components/Navbar";
 import GlobalEventHandler from "./components/GlobalEventHandler";
-import "./App.css";
+import "./App.less";
 
 function AppContent() {
   const location = useLocation();

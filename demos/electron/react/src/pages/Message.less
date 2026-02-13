@@ -1,0 +1,30 @@
+@import '../styles/variables.less';
+
+.message {
+  min-height: 100vh;
+  padding: @spacing-xxxl @spacing-lg;
+  background: gray;
+
+  h1 {
+    text-align: center;
+    color: @white;
+    font-size: 32px;
+    margin-bottom: @spacing-xxxl;
+    text-shadow: @shadow-sm;
+  }
+
+  &-lists {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: @spacing-xl;
+  }
+}
+
+@media (max-width: @screen-mobile) {
+  .message-lists {
+    grid-template-columns: 1fr;
+  }
+}
+

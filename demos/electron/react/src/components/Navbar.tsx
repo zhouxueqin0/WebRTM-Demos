@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { mockAppLogout } from "../../../../shared/utils/auth";
-import "./Navbar.css";
+import "./Navbar.less";
 
 export default function Navbar() {
   const location = useLocation();
@@ -44,7 +44,7 @@ export default function Navbar() {
         ))}
       </ul>
       <div className="navbar-footer">
-        <button onClick={handleLogout} className="logout-button">
+        <button onClick={handleLogout} className="logout">
           <span className="navbar-icon">🚪</span>
           <span className="navbar-label">Logout</span>
         </button>

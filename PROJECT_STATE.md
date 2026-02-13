@@ -2,29 +2,22 @@
 
 ## 当前任务
 
-**feat(electron-vue): 创建 Electron + Vue3 Demo 项目**
+**refactor(electron-react): 将 CSS 迁移到 Less 并优化**
 
-基于 `demos/electron/react` 创建 `demos/electron/vue` demo，实现相同功能。
+将 `demos/electron/react` 项目中的所有 CSS 文件迁移到 Less 技术栈，并使用 Less 特性优化代码结构。
 
 ## 阶段
 
-✅ 完成
+⚡ 执行
 
 ## Todo List
 
-- [x] 1. 创建项目配置文件（package.json, vite.config.ts, main.js, index.html）
-- [x] 2. 创建类型定义和 Mock 数据
-- [x] 3. 创建 Pinia stores（user, chat）
-- [x] 4. 创建路由配置
-- [x] 5. 创建页面组件（Login, Home, Message, More）
-- [x] 6. 创建通用组件（Navbar, ChatDrawer, Lists, GlobalEventHandler）
-- [x] 7. 创建样式文件
-- [x] 8. 创建文档（README, RTM_INTEGRATION）
-- [x] 9. 更新 demos/README.md
-- [x] 10. 测试验证（用户已验证通过）
-- [x] 11. 修复路径问题（用户协助修复）
-- [x] 12. 修复环境变量映射问题
-- [x] 13. 提交代码
+- [x] 1. 安装 less 依赖
+- [x] 2. 重命名所有 .css 文件为 .less
+- [x] 3. 更新所有 .tsx 文件中的 import 语句
+- [x] 4. 优化 Less 文件（使用嵌套、变量等特性）
+- [x] 5. 简化组件 className
+- [ ] 6. 验证样式和功能正常
 
 ## 关键决策
 

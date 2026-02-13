@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { rtmEventEmitter, rtmLogin } from "../../../../shared/rtm";
-import "./GlobalEventHandler.css";
+import "./GlobalEventHandler.less";
 
 export default function GlobalEventHandler() {
   const navigate = useNavigate();
@@ -45,11 +45,11 @@ export default function GlobalEventHandler() {
   }
 
   return (
-    <div className="kick-dialog-overlay">
+    <div className="kick-overlay">
       <div className="kick-dialog">
         <h2>⚠️ 账号在其他设备登录</h2>
         <p>检测到您的账号在其他设备登录，当前连接已断开。</p>
-        <div className="kick-dialog-buttons">
+        <div className="kick-buttons">
           <button onClick={handleDismiss} className="btn-secondary">
             我知道了
           </button>

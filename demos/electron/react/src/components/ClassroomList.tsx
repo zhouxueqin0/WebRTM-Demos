@@ -1,5 +1,5 @@
 import type { Classroom } from "../types/chat";
-import "./ClassroomList.css";
+import "./ClassroomList.less";
 
 interface ClassroomListProps {
   classrooms: Classroom[];
@@ -11,17 +11,17 @@ export default function ClassroomList({
   onClassroomClick,
 }: ClassroomListProps) {
   return (
-    <div className="classroom-list-container">
-      <h2 className="classroom-list-title">Classroom Channels</h2>
+    <div className="classroom">
+      <h2 className="classroom-title">Classroom Channels</h2>
       <div className="classroom-list">
         {classrooms.map((classroom) => (
           <div
             key={classroom.id}
-            className="classroom-list-item"
+            className="classroom-item"
             onClick={() => onClassroomClick(classroom)}
           >
-            <span className="classroom-list-icon">📚</span>
-            <span className="classroom-list-name">{classroom.name}</span>
+            <span className="classroom-icon">📚</span>
+            <span className="classroom-name">{classroom.name}</span>
           </div>
         ))}
       </div>

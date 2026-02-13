@@ -1,0 +1,52 @@
+@import '../styles/variables.less';
+
+.more {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: @gradient-pink;
+
+  &-content {
+    text-align: center;
+    color: @white;
+    animation: fadeIn @transition-slow ease-in;
+
+    h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin: 0 0 @spacing-md 0;
+      text-shadow: @shadow-sm;
+    }
+  }
+
+  &-message {
+    font-size: 18px;
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(@spacing-lg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: @screen-mobile) {
+  .more {
+    &-content h1 {
+      font-size: 36px;
+    }
+
+    &-message {
+      font-size: 16px;
+    }
+  }
+}
+

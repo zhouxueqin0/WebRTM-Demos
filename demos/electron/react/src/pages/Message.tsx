@@ -17,7 +17,7 @@ import ClassroomList from "../components/ClassroomList";
 import ChatDrawer from "../components/ChatDrawer";
 import type { Classroom, ChatDrawerState, Message } from "../types/chat";
 import type { User as Teacher } from "../types/user";
-import "./Message.css";
+import "./Message.less";
 import { useUserStore } from "../store/user";
 import StudentList from "../components/StudentList";
 
@@ -135,10 +135,10 @@ export default function Message() {
   };
 
   return (
-    <div className="message-container">
+    <div className="message">
       <h1>RTM SDK Demo</h1>
 
-      <div className="lists-container">
+      <div className="message-lists">
         {userRole === "student" ? (
           <TeacherList
             teachers={MOCK_TEACHERS}
