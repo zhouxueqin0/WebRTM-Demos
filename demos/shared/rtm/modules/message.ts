@@ -4,7 +4,7 @@ import {
   getGlobalRtmClient,
   GetHistoryMessageOptions,
   PublishOptions,
-} from "./util";
+} from "../util";
 
 // Subscribe to a channel (for message channels, not stream channels)
 async function subscribeChannel(channelName: string) {

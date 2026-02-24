@@ -1,28 +1,22 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isAuthenticated } from "../../../shared/utils/auth";
-import {
-  subscribeChannel,
-  unsubscribeChannel,
-  sendChannelMessage,
-  sendMessageToUser,
-  getGlobalRtmClient,
-  rtmEventEmitter,
-} from "../../../shared/rtm/index";
-
-import { handleChannelMessage, useChatStore } from "../../store/chat";
+import { useChatStore } from "../../store/chat";
+import { useRtmStore } from "../../store/rtm";
 import {
   MOCK_TEACHERS,
   MOCK_CLASSROOMS,
   MOCK_STUDENTS,
-} from "../../mocks/data";
+} from "../../store/mocks/data";
 import TeacherList from "../components/TeacherList";
 import ClassroomList from "../components/ClassroomList";
 import ChatDrawer from "../components/ChatDrawer";
-import type { Classroom, ChatDrawerState, Message } from "../../types/chat";
-import type { User as Teacher } from "../../types/user";
+import type {
+  Classroom,
+  ChatDrawerState,
+  User as Teacher,
+} from "../../store/mocks/type";
 import "./page.css";
 import { useUserStore } from "@/store/user";
 import StudentList from "../components/StudentList";
@@ -34,6 +28,13 @@ export default function Message() {
   const router = useRouter();
   const userId = useUserStore((s) => s.userId);
   const userRole = useUserStore((s) => s.role);
+
+  const checkRtmStatus = useRtmStore((s) => s.checkRtmStatus);
+  const openPrivateChat = useChatStore((s) => s.openPrivateChat);
+  const openChannelChat = useChatStore((s) => s.openChannelChat);
+  const closeChat = useChatStore((s) => s.closeChat);
+  const sendMessage = useChatStore((s) => s.sendMessage);
+
   const [drawerState, setDrawerState] = useState<ChatDrawerState>({
     isOpen: false,
     mode: "private",
@@ -41,45 +42,36 @@ export default function Message() {
     targetName: "",
   });
 
-  const currentChannelRef = useRef<string | null>(null);
-
-  const clearUnread = useChatStore((s) => s.clearUnread);
-
   useEffect(() => {
     // 检查登录状态
-    if (!isAuthenticated()) {
+    if (!checkRtmStatus()) {
       router.push("/");
       return;
     }
 
-    try {
-      getGlobalRtmClient();
-    } catch (e) {
+    // 检查 RTM 状态
+    if (!checkRtmStatus()) {
       router.push("/");
       return;
     }
-  }, [router]);
+  }, [router, checkRtmStatus]);
 
   const handlePrivateChatClick = (teacher: Teacher) => {
+    // 打开私聊（清零未读数）
+    openPrivateChat(teacher.userId);
+
     setDrawerState({
       isOpen: true,
       mode: "private",
       targetId: teacher.userId,
       targetName: teacher.name ?? teacher.userId,
     });
-
-    // 清零未读数
-    clearUnread(teacher.userId);
   };
 
   const handleClassroomClick = async (classroom: Classroom) => {
-    // 订阅前监听
-    rtmEventEmitter.addListener("message", handleChannelMessage);
-
-    // 订阅频道
     try {
-      await subscribeChannel(classroom.id);
-      currentChannelRef.current = classroom.id;
+      // 打开频道聊天（订阅 + 注册监听器）
+      await openChannelChat(classroom.id);
 
       setDrawerState({
         isOpen: true,
@@ -88,56 +80,28 @@ export default function Message() {
         targetName: classroom.name,
       });
     } catch (error) {
-      console.error("Failed to subscribe channel:", error);
+      console.error("Failed to open channel chat:", error);
     }
   };
 
   const handleCloseDrawer = async () => {
-    // 如果是频道模式，取消订阅
-    if (drawerState.mode === "channel" && currentChannelRef.current) {
-      try {
-        rtmEventEmitter.removeListener("message", handleChannelMessage);
-        await unsubscribeChannel(currentChannelRef.current);
-        currentChannelRef.current = null;
-      } catch (error) {
-        console.error("Failed to unsubscribe channel:", error);
-      }
-    }
+    try {
+      // 关闭聊天（取消订阅 + 清理监听器）
+      await closeChat(drawerState.mode);
 
-    setDrawerState({
-      ...drawerState,
-      isOpen: false,
-    });
+      setDrawerState({
+        ...drawerState,
+        isOpen: false,
+      });
+    } catch (error) {
+      console.error("Failed to close chat:", error);
+    }
   };
 
   const handleSendMessage = async (content: string) => {
     try {
-      if (drawerState.mode === "private") {
-        // 发送私聊消息
-        await sendMessageToUser(drawerState.targetId, content);
-
-        // 添加到本地消息列表 - 使用 getState()
-        const msg: Message = {
-          id: `${Date.now()}-${Math.random()}`,
-          senderId: userId,
-          senderName: "Me",
-          content,
-          timestamp: Date.now(),
-        };
-        useChatStore.getState().addPrivateMessage(drawerState.targetId, msg);
-      } else {
-        // 发送频道消息
-        await sendChannelMessage(drawerState.targetId, content);
-
-        // 添加到本地消息列表 - 使用 getState()
-        const msg: Message = {
-          id: `${Date.now()}-${Math.random()}`,
-          senderId: userId,
-          senderName: "Me",
-          content,
-          timestamp: Date.now(),
-        };
-      }
+      // 发送消息（通过 Chat Store）
+      await sendMessage(drawerState.targetId, content, drawerState.mode);
     } catch (error) {
       console.error("Failed to send message:", error);
     }

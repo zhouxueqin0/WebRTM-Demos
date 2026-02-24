@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { mockAppLogout } from "../../../shared/utils/auth";
-import "./Navbar.css";
+import "./styles/Navbar.css";
+import { useAppStore } from "@/store/app";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+
+  const logout = useAppStore((s) => s.logout);
 
   const navItems = [
     { path: "/home", label: "Home", icon: "🏠" },
@@ -17,7 +19,8 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await mockAppLogout();
+      await logout();
+
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);

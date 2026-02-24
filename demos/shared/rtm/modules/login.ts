@@ -5,7 +5,7 @@ import {
   RTM,
   setRtmClient,
   setRtmState,
-} from "./util";
+} from "../util";
 import { initRtmEvents, releaseRtmEvents } from "./rtm-events";
 
 // login
@@ -22,8 +22,8 @@ async function initRtm(uid: string, token?: string) {
     // reuse
     rtm = getGlobalRtmClient();
   } catch (_) {
-    // create
-    rtm = new RTM(AgoraAppId, uid, rtmConfig);
+    // create - AgoraAppId 是函数，调用获取值
+    rtm = new RTM(AgoraAppId(), uid, rtmConfig);
   }
 
   setRtmClient(rtm);

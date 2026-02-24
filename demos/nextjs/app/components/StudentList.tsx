@@ -1,7 +1,7 @@
 "use client";
-import type { User as Student } from "../../types/user";
+import type { User as Student } from "../../store/mocks/type";
 import { useChatStore } from "../../store/chat";
-import styles from "./StudentList.module.css";
+import styles from "./styles/StudentList.module.css";
 
 interface StudentListProps {
   students: Student[];

@@ -1,14 +1,14 @@
-export { rtmLogin, initRtm, releaseRtm } from "./login";
+export { rtmLogin, initRtm, releaseRtm } from "./modules/login";
 
 export {
   sendChannelMessage,
   sendMessageToUser,
   subscribeChannel,
   unsubscribeChannel,
-} from "./message";
+} from "./modules/message";
 
-export { initRtmEvents, releaseRtmEvents } from "./rtm-events";
+export { initRtmEvents, releaseRtmEvents } from "./modules/rtm-events";
 
-export { initStreamChannel, joinTopic } from "./streamchannel";
+export { initStreamChannel, joinTopic } from "./modules/streamchannel";
 
 export * from "./util";

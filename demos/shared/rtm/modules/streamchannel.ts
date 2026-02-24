@@ -3,7 +3,7 @@ import {
   getStreamChannel,
   setStreamChannel,
   delStreamChannel,
-} from "./util";
+} from "../util";
 
 // API-streamchannel
 async function initStreamChannel(channelName: string, token?: string) {

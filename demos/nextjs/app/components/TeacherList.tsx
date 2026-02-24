@@ -1,8 +1,8 @@
 "use client";
 
-import type { User as Teacher } from "../../types/user";
+import type { User as Teacher } from "../../store/mocks/type";
 import { useChatStore } from "../../store/chat";
-import styles from "./TeacherList.module.css";
+import styles from "./styles/TeacherList.module.css";
 
 interface TeacherListProps {
   teachers: Teacher[];

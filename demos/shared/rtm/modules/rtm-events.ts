@@ -3,14 +3,14 @@ import {
   setRtmState,
   getGlobalRtmClient,
   rtmEventEmitter,
-} from "./util";
+} from "../util";
 
 /**
  * @remarks
  * Best Practice!
  */
 function handleLinkState(eventData: RTMEvents.LinkStateEvent) {
-  rtmEventEmitter.emit("linkstate", eventData);
+  rtmEventEmitter.emit("linkState", eventData);
 
   /**
    * @example

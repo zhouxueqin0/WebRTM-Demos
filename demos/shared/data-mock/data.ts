@@ -1,7 +1,7 @@
 // Mock 数据
 
-import { User } from "@/types/user";
-import type { Classroom } from "../types/chat";
+import { User } from "./types/user";
+import type { Classroom } from "./types/chat";
 
 export const MOCK_TEACHERS: User[] = [
   { userId: "teacher_wang", name: "Mr. Wang", avatar: "👨‍🏫", role: "teacher" },
