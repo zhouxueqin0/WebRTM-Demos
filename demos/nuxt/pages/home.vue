@@ -9,16 +9,15 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { useRtmStore } from "../stores/rtm";
 
 const router = useRouter();
+const rtmStore = useRtmStore();
 
-onMounted(async () => {
-  if (process.client) {
-    const { isAuthenticated } = await import("../../shared/utils/auth");
-    // 检查登录状态
-    if (!isAuthenticated()) {
-      router.push("/");
-    }
+onMounted(() => {
+  // 检查 RTM 状态
+  if (!rtmStore.checkRtmStatus()) {
+    router.push("/");
   }
 });
 </script>

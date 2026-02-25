@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onUnmounted, onMounted } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import type { ChatDrawerState } from "../types/chat";
 import { useChatStore } from "../stores/chat";
 
@@ -64,18 +64,6 @@ const chatStore = useChatStore();
 const inputValue = ref("");
 const messagesEndRef = ref<HTMLDivElement | null>(null);
 
-let rtmEventEmitter: any;
-let handleChannelMessage: any;
-
-onMounted(async () => {
-  if (process.client) {
-    const rtmModule = await import("../../shared/rtm");
-    const chatModule = await import("../stores/chat");
-    rtmEventEmitter = rtmModule.rtmEventEmitter;
-    handleChannelMessage = chatModule.handleChannelMessage;
-  }
-});
-
 const messages = computed(() => {
   if (props.state.mode === "private") {
     return chatStore.privateMessages[props.state.targetId] || [];
@@ -91,15 +79,8 @@ watch(
     await nextTick();
     messagesEndRef.value?.scrollIntoView({ behavior: "smooth" });
   },
-  { deep: true },
+  { deep: true }
 );
-
-onUnmounted(() => {
-  // 退出聊天，清理消息监听
-  if (rtmEventEmitter && handleChannelMessage) {
-    rtmEventEmitter.removeListener("message", handleChannelMessage);
-  }
-});
 
 const handleSend = () => {
   if (!inputValue.value.trim()) return;
