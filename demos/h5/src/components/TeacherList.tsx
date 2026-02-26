@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
-import type { User as Teacher } from "../types/user";
+import type { User as Teacher } from "../store/rtm";
 import { unreadCountsAtom } from "../store/chat";
-import "./TeacherList.less";
+import "./styles/TeacherList.less";
 
 interface TeacherListProps {
   teachers: Teacher[];

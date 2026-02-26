@@ -22,17 +22,32 @@ demos/
 ├── nextjs/            # Next.js 14
 ├── h5/                # H5 (Vite + Vanilla TS)
 └── electron/
-    ├── vue/           # Electron + Vue3
-    └── react/         # Electron + React
+    ├── vue/           # Electron + Vue3 + Vite + Pinia
+    └── react/         # Electron + React + Vite + Zustand
 ```
 
 ## 功能说明
 
-每个 demo 包含：
+### 基础 Demo（Vue/React/Nuxt/Next.js/H5）
+
+每个基础 demo 包含：
 
 - **登录页面**：一个 Login 按钮，点击后调用共享的 `mockLogin` 函数
 - **Dashboard 页面**：显示 "Hello World"
 - **单元测试**：使用 Vitest 进行组件和功能测试
+
+### Electron Demo（electron/vue, electron/react）
+
+Electron demo 包含完整的 RTM SDK 集成功能：
+
+- **用户登录**：支持 Teacher/Student 角色切换，使用 RTM 登录
+- **私聊消息**：Teacher List / Student List，点对点消息
+- **频道消息**：Classroom Channels，频道订阅和消息
+- **未读消息计数**：仅私聊消息显示未读数
+- **聊天抽屉**：右侧滑出的聊天界面
+- **互踢处理**：同账号多设备登录时的提示和处理
+- **全局导航栏**：Home / Message / More 页面切换
+- **响应式设计**：适配不同屏幕尺寸
 
 ## 共享工具
 
@@ -143,11 +158,13 @@ cd electron/vue
 npm install
 # 终端 1：启动 Vite 开发服务器
 npm run dev
-# 终端 2：启动 Electron
+# 终端 2：启动 Electron（等待终端 1 启动完成）
 NODE_ENV=development npm run electron
 # 运行测试
 npm test
 ```
+
+⚠️ **重要**：必须先启动 Vite 开发服务器，等待启动完成后再启动 Electron。
 
 ### 9. Electron + React
 
@@ -156,11 +173,13 @@ cd electron/react
 npm install
 # 终端 1：启动 Vite 开发服务器
 npm run dev
-# 终端 2：启动 Electron
+# 终端 2：启动 Electron（等待终端 1 启动完成）
 NODE_ENV=development npm run electron
 # 运行测试
 npm test
 ```
+
+⚠️ **重要**：必须先启动 Vite 开发服务器，等待启动完成后再启动 Electron。
 
 ### 10. 共享工具测试
 
@@ -200,6 +219,9 @@ done
 - **Webpack**: 模块打包工具
 - **TypeScript**: JavaScript 的超集
 - **Electron**: 跨平台桌面应用开发框架
+- **Pinia**: Vue 官方推荐的状态管理库
+- **Zustand**: React 轻量级状态管理库
+- **Agora RTM SDK**: 实时消息服务
 - **Vitest**: 快速的单元测试框架
 
 ## 开发建议
@@ -207,3 +229,30 @@ done
 1. 所有项目都使用了共享的 `mockLogin` 函数，你可以在 `demos/shared/utils/auth.ts` 中实现真实的登录逻辑
 2. 使用 `npm test` 运行测试，使用 `npm run test:watch` 进入监听模式
 3. 共享工具可以根据需要扩展，所有项目都可以直接引用
+4. Electron 项目需要配置环境变量（`.env` 文件），详见各项目的 README.md
+5. Electron 项目集成了 Agora RTM SDK，需要有效的 App ID 和 App Certificate
+
+## 环境变量配置
+
+Electron 项目需要配置 Agora RTM 环境变量：
+
+```bash
+# 进入 Electron 项目目录
+cd electron/vue  # 或 electron/react
+
+# 复制环境变量示例文件
+cp .env.example .env
+
+# 编辑 .env 文件，填入你的 Agora App ID 和 App Certificate
+# VITE_APP_ID=your_app_id_here
+# VITE_APP_CERT=your_app_certificate_here
+```
+
+详细配置说明请参考：`demos/ENV_SETUP.md`
+
+## 相关文档
+
+- [环境变量配置指南](./ENV_SETUP.md)
+- [RTM SDK 集成文档](../docs/RTM_INTEGRATION.md)
+- [Electron Vue Demo README](./electron/vue/README.md)
+- [Electron React Demo README](./electron/react/README.md)

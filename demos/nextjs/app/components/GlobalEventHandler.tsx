@@ -1,28 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { rtmEventEmitter, rtmLogin } from "../../../shared/rtm";
-import "./GlobalEventHandler.css";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useRtmStore, RTMEvents } from "@/store/rtm";
+import "./styles/GlobalEventHandler.css";
+import { useChatStore } from "@/store/chat";
 
 export default function GlobalEventHandler() {
   const router = useRouter();
   const [showKickDialog, setShowKickDialog] = useState(false);
+  const rtmLogin = useRtmStore().rtmLogin;
+  const registerPrivateMessageListener = useChatStore(
+    (s) => s.registerPrivateMessageListener,
+  );
+  const unregisterPrivateMessageListener = useChatStore(
+    (s) => s.unregisterPrivateMessageListener,
+  );
+  const registerLinkStateListener = useRtmStore().registerLinkStateListener;
+  const unRegisterLinkStateListener = useRtmStore().unRegisterLinkStateListener;
 
-  useEffect(() => {
-    // 全局监听 linkState 事件，处理互踢
-    const handleLinkState = (eventData: any) => {
+  const handleLinkState = useMemo(() => {
+    return async (eventData: RTMEvents.LinkStateEvent) => {
       const { currentState, reasonCode } = eventData;
 
       if (currentState === "FAILED" && reasonCode === "SAME_UID_LOGIN") {
         // 显示互踢提示框
         setShowKickDialog(true);
       }
+
+      // token 过期，需要重新登录
+      if (currentState === "FAILED" && reasonCode === "TOKEN_EXPIRED") {
+        await rtmLogin();
+      }
+
+      // 其他处理
     };
-    rtmEventEmitter.addListener("linkstate", handleLinkState);
+  }, []);
+
+  useEffect(() => {
+    // 全局监听私聊消息
+    registerPrivateMessageListener();
+
+    // 全局监听 linkState 事件，处理互踢
+    registerLinkStateListener(handleLinkState);
 
     return () => {
-      rtmEventEmitter.removeListener("linkstate", handleLinkState);
+      unregisterPrivateMessageListener();
+      unRegisterLinkStateListener(handleLinkState);
     };
   }, []);
 
@@ -42,24 +66,24 @@ export default function GlobalEventHandler() {
     router.push("/");
   };
 
-  if (!showKickDialog) {
-    return null;
-  }
-
   return (
-    <div className="kick-dialog-overlay">
-      <div className="kick-dialog">
-        <h2>⚠️ 账号在其他设备登录</h2>
-        <p>检测到您的账号在其他设备登录，当前连接已断开。</p>
-        <div className="kick-dialog-buttons">
-          <button onClick={handleDismiss} className="btn-secondary">
-            我知道了
-          </button>
-          <button onClick={handleRelogin} className="btn-primary">
-            再次登录
-          </button>
+    <>
+      {showKickDialog && (
+        <div className="kick-dialog-overlay">
+          <div className="kick-dialog">
+            <h2>⚠️ 账号在其他设备登录</h2>
+            <p>检测到您的账号在其他设备登录，当前连接已断开。</p>
+            <div className="kick-dialog-buttons">
+              <button onClick={handleDismiss} className="btn-secondary">
+                我知道了
+              </button>
+              <button onClick={handleRelogin} className="btn-primary">
+                再次登录
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

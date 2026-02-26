@@ -1,4 +1,4 @@
-import "./Home.less";
+import "./styles/Home.less";
 
 export default function Home() {
   return (

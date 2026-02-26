@@ -1,7 +1,7 @@
 "use client";
 
-import type { Classroom } from "../../types/chat";
-import styles from "./ClassroomList.module.css";
+import type { Classroom } from "../../store/mocks/type";
+import styles from "./styles/ClassroomList.module.css";
 
 interface ClassroomListProps {
   classrooms: Classroom[];

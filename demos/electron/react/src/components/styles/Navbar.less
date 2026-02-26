@@ -1,0 +1,128 @@
+@import '../../styles/variables.less';
+
+.navbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: @navbar-width;
+  background: @gradient-dark;
+  box-shadow: @shadow-md;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+
+  &-brand {
+    padding: @spacing-xl @spacing-lg;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    h2 {
+      margin: 0;
+      color: @white;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
+  }
+
+  &-menu {
+    list-style: none;
+    padding: @spacing-lg 0;
+    margin: 0;
+    flex: 1;
+
+    li {
+      margin: 0;
+    }
+  }
+
+  &-link {
+    display: flex;
+    align-items: center;
+    gap: @spacing-sm;
+    padding: 14px @spacing-lg;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all @transition-fast;
+    border-left: 3px solid transparent;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: @white;
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: @white;
+      border-left-color: #3498db;
+      font-weight: 500;
+    }
+  }
+
+  &-icon {
+    font-size: 20px;
+    width: @spacing-xl;
+    text-align: center;
+  }
+
+  &-label {
+    font-size: 15px;
+  }
+
+  &-footer {
+    padding: @spacing-lg;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    .logout {
+      display: flex;
+      align-items: center;
+      gap: @spacing-sm;
+      width: 100%;
+      padding: 14px @spacing-lg;
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      border-radius: @border-radius-md;
+      color: @danger-color;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all @transition-fast;
+
+      &:hover {
+        background: rgba(231, 76, 60, 0.2);
+        border-color: rgba(231, 76, 60, 0.5);
+        color: @danger-hover;
+      }
+
+      .navbar-icon {
+        color: @danger-color;
+      }
+    }
+  }
+}
+
+@media (max-width: @screen-mobile) {
+  .navbar {
+    width: @navbar-width-mobile;
+
+    &-brand h2 {
+      font-size: 14px;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+
+    &-label {
+      display: none;
+    }
+
+    &-link {
+      justify-content: center;
+      padding: 14px 10px;
+    }
+
+    &-footer .logout {
+      justify-content: center;
+      padding: 14px 10px;
+    }
+  }
+}
+

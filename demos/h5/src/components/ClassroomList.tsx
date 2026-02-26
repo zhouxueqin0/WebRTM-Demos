@@ -1,5 +1,5 @@
-import type { Classroom } from "../types/chat";
-import "./ClassroomList.less";
+import type { Classroom } from "../store/rtm";
+import "./styles/ClassroomList.less";
 
 interface ClassroomListProps {
   classrooms: Classroom[];

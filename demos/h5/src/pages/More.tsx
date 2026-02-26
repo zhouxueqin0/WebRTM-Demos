@@ -1,17 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useAtomValue } from "jotai";
 import { userIdAtom } from "../store/user";
-import { mockAppLogout } from "../../../shared/utils/auth";
-import "./More.less";
+import { rtmStore } from "../store/rtm";
+import "./styles/More.less";
 
 export default function More() {
   const navigate = useNavigate();
   const userId = useAtomValue(userIdAtom);
 
   const handleLogout = async () => {
-    await mockAppLogout();
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
+    await rtmStore.logout();
     navigate("/");
   };
 
