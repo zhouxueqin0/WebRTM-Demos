@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { User } from "../types/user";
+import type { User } from "../stores/rtm";
 import { useChatStore } from "../stores/chat";
 
 interface Props {
@@ -37,4 +37,4 @@ const chatStore = useChatStore();
   </div>
 </template>
 
-<style scoped src="./StudentList.css"></style>
+<style scoped src="./styles/StudentList.css"></style>

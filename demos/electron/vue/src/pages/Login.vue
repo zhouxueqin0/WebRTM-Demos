@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { mockAppLogin } from "../../../../shared/utils/auth";
 import { useUserStore } from "../stores/user";
-import { rtmEventEmitter } from "../../../../shared/rtm";
-import { handleUserMessage } from "../stores/chat";
+import { useAppStore } from "../stores/app";
 
 const userStore = useUserStore();
+const appStore = useAppStore();
 const router = useRouter();
 
 const loading = ref(false);
@@ -22,9 +21,7 @@ const handleLogin = async (e: Event) => {
 
   try {
     loading.value = true;
-    // 如需使用 rtm 点对点消息，登录前监听，以防漏掉消息
-    rtmEventEmitter.addListener("message", handleUserMessage);
-    await mockAppLogin(userStore.userId, "password");
+    await appStore.login();
 
     localStorage.setItem("username", userStore.userId);
     localStorage.setItem("token", "mock-token-" + Date.now());
@@ -32,8 +29,6 @@ const handleLogin = async (e: Event) => {
     // 登录后跳转
     router.push("/home");
   } catch (err) {
-    // 登录失败移除事件监听
-    rtmEventEmitter.removeListener("message", handleUserMessage);
     error.value = "Login failed. Please try again.";
     console.error(err);
   } finally {
@@ -91,4 +86,4 @@ const handleLogin = async (e: Event) => {
   </div>
 </template>
 
-<style scoped src="./Login.css"></style>
+<style scoped src="./styles/Login.css"></style>

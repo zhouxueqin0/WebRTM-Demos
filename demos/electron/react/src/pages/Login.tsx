@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockAppLogin } from "../../../../shared/utils/auth";
-import "./Login.less";
+import "./styles/Login.less";
 import { useUserStore } from "../store/user";
-import { rtmEventEmitter } from "../../../../shared/rtm";
-import { handleUserMessage } from "../store/chat";
+import { useAppStore } from "../store/app";
 
 export default function Login() {
   const userId = useUserStore((s) => s.userId);
   const userRole = useUserStore((s) => s.role);
   const setUserId = useUserStore((s) => s.setUserId);
   const setUserRole = useUserStore((s) => s.setRole);
+  const login = useAppStore((s) => s.login);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -25,9 +24,7 @@ export default function Login() {
 
     try {
       setLoading(true);
-      // 如需使用 rtm 点对点消息，登录前监听，以防漏掉消息
-      rtmEventEmitter.addListener("message", handleUserMessage);
-      await mockAppLogin(userId, "password");
+      await login();
 
       localStorage.setItem("username", userId);
       localStorage.setItem("token", "mock-token-" + Date.now());
@@ -35,8 +32,6 @@ export default function Login() {
       // 登录后跳转
       navigate("/home");
     } catch (err) {
-      // 登录失败移除事件监听
-      rtmEventEmitter.removeListener("message", handleUserMessage);
       setError("Login failed. Please try again.");
       console.error(err);
     } finally {

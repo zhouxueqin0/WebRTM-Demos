@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { isAuthenticated } from "../../../../shared/utils/auth";
+import { useRtmStore } from "../stores/rtm";
 
 const router = useRouter();
+const rtmStore = useRtmStore();
 
 onMounted(() => {
-  // 检查登录状态
-  if (!isAuthenticated()) {
+  // 检查 RTM 登录状态
+  if (!rtmStore.checkRtmStatus()) {
     router.push("/");
   }
 });
@@ -22,4 +23,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped src="./Home.css"></style>
+<style scoped src="./styles/Home.css"></style>

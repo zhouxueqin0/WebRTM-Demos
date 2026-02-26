@@ -1,6 +1,6 @@
-import type { User as Teacher } from "../types/user";
+import type { User as Teacher } from "../store/rtm";
 import { useChatStore } from "../store/chat";
-import "./TeacherList.less";
+import "./styles/TeacherList.less";
 
 interface TeacherListProps {
   teachers: Teacher[];

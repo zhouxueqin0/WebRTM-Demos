@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { isAuthenticated } from "../../../../shared/utils/auth";
+import { useRtmStore } from "../stores/rtm";
 
 const router = useRouter();
+const rtmStore = useRtmStore();
 
 onMounted(() => {
-  if (!isAuthenticated()) {
+  if (!rtmStore.checkRtmStatus()) {
     router.push("/");
   }
 });

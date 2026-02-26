@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { mockAppLogout } from "../../../../shared/utils/auth";
+import { useAppStore } from "../stores/app";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,7 +13,7 @@ const navItems = [
 
 const handleLogout = async () => {
   try {
-    await mockAppLogout();
+    await  useAppStore().logout();
     router.push("/");
   } catch (error) {
     console.error("Logout failed:", error);
@@ -49,4 +49,4 @@ const handleLogout = async () => {
   </nav>
 </template>
 
-<style scoped src="./Navbar.css"></style>
+<style scoped src="./styles/Navbar.css"></style>

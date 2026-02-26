@@ -1,17 +1,18 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../../../../shared/utils/auth";
-import "./Home.less";
+import { useRtmStore } from "../store/rtm";
+import "./styles/Home.less";
 
 export default function Home() {
   const navigate = useNavigate();
+  const checkRtmStatus = useRtmStore((s) => s.checkRtmStatus);
 
   useEffect(() => {
-    // 检查登录状态
-    if (!isAuthenticated()) {
+    // 检查 RTM 登录状态
+    if (!checkRtmStatus()) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [navigate, checkRtmStatus]);
 
   return (
     <div className="home">

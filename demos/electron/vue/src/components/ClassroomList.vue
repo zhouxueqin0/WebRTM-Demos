@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Classroom } from "../types/chat";
+import type { Classroom } from "../stores/rtm";
 
 interface Props {
   classrooms: Classroom[];
@@ -28,4 +28,4 @@ const emit = defineEmits<{
   </div>
 </template>
 
-<style scoped src="./ClassroomList.css"></style>
+<style scoped src="./styles/ClassroomList.css"></style>
