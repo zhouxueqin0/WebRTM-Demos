@@ -1,16 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppLayout from "./components/AppLayout";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
+import Message from "./pages/Message";
+import More from "./pages/More";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<Login />} />
+          <Route path="home" element={<Home />} />
+          <Route path="message" element={<Message />} />
+          <Route path="more" element={<More />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

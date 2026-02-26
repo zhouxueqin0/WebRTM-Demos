@@ -2,9 +2,10 @@
   "compilerOptions": {
     "composite": true,
     "skipLibCheck": true,
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"]
   },
-  "include": ["webpack.config.ts"]
+  "include": ["webpack.config.ts", "import-meta.d.ts"]
 }

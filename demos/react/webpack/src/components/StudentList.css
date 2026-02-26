@@ -1,0 +1,53 @@
+.list-container {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.list-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: #2d3748;
+}
+
+.list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.list-item:hover {
+  background: #f7fafc;
+}
+
+.list-avatar {
+  font-size: 1.5rem;
+}
+
+.list-name {
+  flex: 1;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.list-badge {
+  background: #e53e3e;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
