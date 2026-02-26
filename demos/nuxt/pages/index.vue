@@ -48,29 +48,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import { useUserStore } from "../stores/user";
+import { useAppStore } from "../stores/app";
 
 const userStore = useUserStore();
+const appStore = useAppStore();
 const loading = ref(false);
 const error = ref("");
 const router = useRouter();
 
-// 动态导入 RTM 相关模块（仅客户端）
-let mockAppLogin: any;
-let rtmEventEmitter: any;
-let handleUserMessage: any;
 
-onMounted(async () => {
-  if (process.client) {
-    const authModule = await import("../../shared/utils/auth");
-    const rtmModule = await import("../../shared/rtm");
-    const chatModule = await import("../stores/chat");
-
-    mockAppLogin = authModule.mockAppLogin;
-    rtmEventEmitter = rtmModule.rtmEventEmitter;
-    handleUserMessage = chatModule.handleUserMessage;
-  }
-});
 
 const handleLogin = async () => {
   if (!userStore.userId.trim()) {
@@ -78,26 +66,16 @@ const handleLogin = async () => {
     return;
   }
 
-  // 确保模块已加载
-  if (!mockAppLogin || !rtmEventEmitter || !handleUserMessage) {
-    error.value = "System is initializing, please try again.";
-    return;
-  }
-
   try {
     loading.value = true;
-    // 如需使用 rtm 点对点消息，登录前监听，以防漏掉消息
-    rtmEventEmitter.addListener("message", handleUserMessage);
-    await mockAppLogin(userStore.userId, "password");
+    error.value = "";
 
-    localStorage.setItem("username", userStore.userId);
-    localStorage.setItem("token", "mock-token-" + Date.now());
+    // 调用 App Store 的 login 方法
+    await appStore.login();
 
     // 登录后跳转
     await router.push("/home");
   } catch (err) {
-    // 登录失败移除事件监听
-    rtmEventEmitter.removeListener("message", handleUserMessage);
     error.value = "Login failed. Please try again.";
     console.error(err);
   } finally {

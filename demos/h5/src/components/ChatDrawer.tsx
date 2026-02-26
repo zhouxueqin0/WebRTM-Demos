@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useAtomValue } from "jotai";
-import type { ChatDrawerState } from "../types/chat";
+import type { ChatDrawerState } from "../store/rtm";
 import { privateMessagesAtom, channelMessagesAtom } from "../store/chat";
-import "./ChatDrawer.less";
+import "./styles/ChatDrawer.less";
 
 interface ChatDrawerProps {
   state: ChatDrawerState;

@@ -6,11 +6,11 @@ import Message from "./pages/Message";
 import More from "./pages/More";
 import Navbar from "./components/Navbar";
 import GlobalEventHandler from "./components/GlobalEventHandler";
-import { isAuthenticated } from "../../shared/utils/auth";
+import { rtmStore } from "./store/rtm";
 import "./App.less";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  return isAuthenticated() ? <>{children}</> : <Navigate to="/" replace />;
+  return rtmStore.checkRtmStatus() ? <>{children}</> : <Navigate to="/" replace />;
 }
 
 function App() {

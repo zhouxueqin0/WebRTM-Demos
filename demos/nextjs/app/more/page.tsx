@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { isAuthenticated } from "../../../shared/utils/auth";
+import { useRtmStore } from "@/store/rtm";
 import "./page.css";
 
 // 强制动态渲染
@@ -10,10 +10,11 @@ export const dynamic = "force-dynamic";
 
 export default function More() {
   const router = useRouter();
+  const checkRtmStatus = useRtmStore().checkRtmStatus;
 
   useEffect(() => {
     // 检查登录状态
-    if (!isAuthenticated()) {
+    if (!checkRtmStatus()) {
       router.push("/");
     }
   }, [router]);

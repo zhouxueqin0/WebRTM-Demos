@@ -1,216 +1,59 @@
-# PROJECT_STATE.md（项目状态记录）
+# Project State
 
-## 目标
+## 当前任务
 
-- 补全 H5 demo，展示 RTM 在轻量级 React 项目中的最佳集成
-- 技术栈：React 18 + Vite + Jotai + React Router + Less
-- 功能对齐 Next.js demo：登录、角色切换、私聊、频道消息
-- 展示原子化状态管理（Jotai）与集中式状态管理（Zustand）的差异
+**refactor(electron-react): 将 CSS 迁移到 Less 并优化**
 
-## 上下文总结
+将 `demos/electron/react` 项目中的所有 CSS 文件迁移到 Less 技术栈，并使用 Less 特性优化代码结构。
 
-- Next.js 14 + App Router + TypeScript
-- 使用 Zustand 进行状态管理（chat + user）
-- Mock 数据：5 个老师，3 个课程，5 个学生
-- 支持 Teacher 和 Student 两种角色切换
-- 私聊消息显示未读数，频道消息不显示
-- 抽屉从右侧滑出，离开频道时取消订阅
-- RTM 事件通过 EventEmitter 统一管理
-- 当前运行时：Node.js v22.21.1，包管理器：npm
+## 阶段
 
-## 注意点
+✅ 完成
 
-- RTM 事件监听使用 EventEmitter 模式，在 Next.js 层处理
-- 使用 Zustand 管理消息状态和用户状态，确保 UI 响应式更新
-- 私聊消息按 userId 分组，频道消息按 channelId 分组
-- 抽屉打开时清零未读数，离开频道时取消订阅
-- 消息仅存储在内存中，刷新页面清空
-- 所有导入使用 TypeScript 标准（不带扩展名）
-- **重要**：事件回调函数中必须使用 `store.getState()` 而不是 Hooks
-- Next.js 页面必须标记 `'use client'` 和 `export const dynamic = 'force-dynamic'`
+## Todo List
 
-## 待办（带复选框）
+- [x] 1. 安装 less 依赖
+- [x] 2. 重命名所有 .css 文件为 .less
+- [x] 3. 更新所有 .tsx 文件中的 import 语句
+- [x] 4. 优化 Less 文件（使用嵌套、变量等特性）
+- [x] 5. 简化组件 className
+- [x] 6. 验证样式和功能正常
+- [x] 7. 提交代码
 
-### H5 Demo（补全中）
+## 关键决策
 
-- [x] 1. 更新 package.json（添加 React、Jotai、React Router、Less 等依赖）
-- [x] 2. 更新 vite.config.ts（配置 React 插件、Less 支持、UMD 兼容）
-- [x] 3. 创建类型定义（types/user.ts, types/chat.ts）
-- [x] 4. 创建 Mock 数据（mocks/data.ts）
-- [x] 5. 创建 Jotai atoms（store/user.ts, store/chat.ts）
-- [x] 6. 创建 App.tsx（根组件 + 路由配置）
-- [x] 7. 创建登录页面（pages/Login.tsx + Login.less）
-- [x] 8. 创建 Home 页面（pages/Home.tsx + Home.less）
-- [x] 9. 创建 Message 页面（pages/Message.tsx + Message.less）
-- [x] 10. 创建 More 页面（pages/More.tsx + More.less）
-- [x] 11. 创建 Navbar 组件（components/Navbar.tsx）
-- [x] 12. 创建 ChatDrawer 组件（components/ChatDrawer.tsx）
-- [x] 13. 创建 TeacherList 组件（components/TeacherList.tsx）
-- [x] 14. 创建 StudentList 组件（components/StudentList.tsx）
-- [x] 15. 创建 ClassroomList 组件（components/ClassroomList.tsx）
-- [x] 16. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.tsx）
-- [x] 17. 更新 main.tsx（React 入口 + 环境变量 polyfill）
-- [x] 18. 更新 index.html（检查配置）
-- [x] 19. 创建全局样式（App.less）
-- [x] 20. 创建测试文件
-- [x] 21. 创建环境变量 polyfill（utils/env-polyfill.ts）
-- [x] 22. 修复生产构建 EventEmitter 问题（创建自定义 EventEmitter 实现）
-- [ ] 23. 提交代码
-- [ ] 24. 安装依赖并测试运行
-- [ ] 25. 更新 AGENTS.md 文档（H5 技术栈说明）
+1. **公共变量管理**: 创建 `styles/variables.less` 统一管理颜色、间距、圆角、阴影、过渡等
+2. **公共样式复用**: 创建 `styles/list-common.less` 使用 Mixin 复用列表组件样式
+3. **Less 嵌套特性**: 使用父组件包裹子元素的嵌套写法，简化 className 命名
+4. **BEM 简化**: 使用 `&` 父选择器引用简化 BEM 命名规范
 
-### React Vite Demo（对齐 Next.js 功能）
+## 上下文
 
-- [x] 1. 更新 package.json（添加 zustand、agora-rtm 等依赖）
-- [x] 2. 创建类型定义（types/user.ts, types/chat.ts）
-- [x] 3. 创建 Mock 数据（mocks/data.ts）
-- [x] 4. 创建 Zustand stores（store/user.ts, store/chat.ts）
-- [x] 5. 更新登录页面（pages/Login.tsx + Login.css - 含角色选择）
-- [x] 6. 创建 Home 页面（pages/Home.tsx + Home.css）
-- [x] 7. 创建 Message 页面（pages/Message.tsx + Message.css）
-- [x] 8. 创建 More 页面（pages/More.tsx + More.css）
-- [x] 9. 创建 Navbar 组件（components/Navbar.tsx + Navbar.css）
-- [x] 10. 创建 ChatDrawer 组件（components/ChatDrawer.tsx + ChatDrawer.css）
-- [x] 11. 创建 TeacherList 组件（components/TeacherList.tsx + TeacherList.css）
-- [x] 12. 创建 StudentList 组件（components/StudentList.tsx + StudentList.css）
-- [x] 13. 创建 ClassroomList 组件（components/ClassroomList.tsx + ClassroomList.css）
-- [x] 14. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.tsx + GlobalEventHandler.css）
-- [x] 15. 更新 main.tsx（路由配置 + 布局）
-- [x] 16. 更新测试文件（Login.test.tsx, Home.test.tsx）
-- [x] 17. 修复 shared 路径（../../../../shared/）
-- [x] 18. 修复 index.html 入口文件（main.tsx）
-- [x] 19. 配置 Vite alias 解析 agora-rtm（避免在 shared 安装）
-- [ ] 20. 创建 .env 文件
-- [ ] 21. 测试运行
-- [ ] 22. 提交代码
-  - 备注：修复消息重复展示（避免本地+回执双写，过滤私聊回执）
-  - 备注：ChatDrawer header 按钮占位调整
+- 参考项目: `demos/electron/react`
+- 技术栈: React 18 + TypeScript + Vite + Less
+- 优化内容: CSS → Less 迁移 + 样式结构优化
 
-### Next.js Demo（已完成）
+---
 
-- [x] 安装 zustand 依赖
-- [x] 创建类型定义（User, Classroom, Message）
-- [x] 创建 Mock 数据（5 老师 + 3 课程 + 5 学生）
-- [x] 创建 Zustand store（chat + user）
-- [x] 创建 TeacherList 组件（含未读徽章）
-- [x] 创建 StudentList 组件（含未读徽章）
-- [x] 创建 ClassroomList 组件
-- [x] 创建 ChatDrawer 组件（私聊 + 频道模式）
-- [x] 更新 Dashboard 页面（集成 RTM + 组件）
-- [x] 扩展 shared/rtm 功能（EventEmitter + 频道订阅）
-- [x] 更新登录页面（添加 userRole 单选按钮）
-- [x] 修复 useEffect 重复执行问题
-- [x] 修复 Hook 调用错误（使用 getState()）
-- [x] 更新 AGENTS.md 文档
-- [x] **实现互踢处理逻辑**
-- [x] **添加全局导航栏（Next.js demo）**
+**创建时间**: 2026-02-13
+**最后更新**: 2026-02-13
+**完成时间**: 2026-02-13
 
-### Nuxt Demo（对齐 Next.js 功能）
+## 关键决策
 
-- [x] 1. 更新 package.json（添加 agora-rtm、@pinia/nuxt 等依赖）
-- [x] 2. 创建类型定义（types/user.ts, types/chat.ts）
-- [x] 3. 创建 Mock 数据（mocks/data.ts）
-- [x] 4. 创建 Pinia stores（stores/chat.ts, stores/user.ts）
-- [x] 5. 创建登录页面（pages/index.vue - 含角色选择）
-- [x] 6. 创建 Home 页面（pages/home.vue）
-- [x] 7. 创建 Message 页面（pages/message.vue）
-- [x] 8. 创建 More 页面（pages/more.vue）
-- [x] 9. 创建 Navbar 组件（components/Navbar.vue）
-- [x] 10. 创建 ChatDrawer 组件（components/ChatDrawer.vue）
-- [x] 11. 创建 TeacherList 组件（components/TeacherList.vue）
-- [x] 12. 创建 StudentList 组件（components/StudentList.vue）
-- [x] 13. 创建 ClassroomList 组件（components/ClassroomList.vue）
-- [x] 14. 创建 GlobalEventHandler 组件（components/GlobalEventHandler.vue）
-- [x] 15. 更新 app.vue（集成布局和全局组件）
-- [x] 16. 更新 nuxt.config.ts（配置 Pinia、环境变量等）
-- [x] 17. 创建测试文件
-- [x] 18. 修复导入路径（shared 目录相对路径）
-- [x] 19. 创建 tsconfig.json
-- [ ] 20. 提交代码
-- [ ] 21. 安装依赖并测试运行
-- [ ] 22. 用户测试验证功能
+1. **状态管理**: 使用 Pinia（Vue 官方推荐）替代 Zustand
+2. **路由**: 使用 Vue Router 4
+3. **组件语法**: 使用 `<script setup lang="ts">` 语法
+4. **互踢处理**: GlobalEventHandler.vue 监听 linkstate 事件
+5. **环境变量**: 使用 VITE_APP_ID 和 VITE_APP_CERT 前缀
 
-## 已完成/变更摘要（PR 可直接使用）
+## 上下文
 
-### 本次会话改动（未提交）
+- 参考项目: `demos/electron/react`
+- 对话记录: `.ai-coding/feat/electron-vue.md`
+- 共享工具: `demos/shared/`
 
-**变更摘要**：重构 RTM 事件管理，添加用户角色系统
+---
 
-**影响范围**：
-
-- demos/nextjs/（新增 user store, StudentList 组件，重构 Dashboard）
-- demos/shared/rtm/（添加 EventEmitter 事件管理）
-- 登录页面（添加角色选择）
-
-**关键变更**：
-
-1. **用户系统**：
-   - 新增 `types/user.ts` 定义 User 类型（支持 teacher/student 角色）
-   - 新增 `store/user.ts` 管理用户状态（userId, role）
-   - 登录页面添加角色单选按钮（Teacher / Student）
-
-2. **组件扩展**：
-   - 新增 `StudentList` 组件（与 TeacherList 对应）
-   - 更新 `TeacherList` 使用统一的 User 类型
-   - Dashboard 根据角色显示不同列表
-
-3. **RTM 事件管理重构**：
-   - shared/rtm 添加 `rtmEventEmitter` (EventEmitter)
-   - 统一事件管理：message, linkState 等
-   - 修复 Hook 调用错误：`handleMessage` 使用 `getState()`
-
-4. **性能优化**：
-   - 修复 useEffect 依赖问题，确保只执行一次
-   - 事件监听器使用 EventEmitter 模式，避免重复注册
-
-5. **Mock 数据**：
-   - 添加 5 个学生数据（MOCK_STUDENTS）
-   - 统一使用 User 类型
-
-**技术细节**：
-
-- 事件回调函数中使用 `store.getState()` 避免 Hook 规则错误
-- EventEmitter 模式解耦 RTM 事件和组件
-- Zustand store 分离：chat store + user store
-- 类型安全：User 类型统一 teacher 和 student
-
-**验证方式**：
-
-```bash
-cd demos/nextjs
-npm run dev
-```
-
-测试：
-
-- 登录时选择角色（Teacher / Student）
-- Teacher 看到 Student List + Classroom Channels
-- Student 看到 Teacher List + Classroom Channels
-- 私聊消息未读计数
-- 频道消息订阅/取消订阅
-
-**已知问题**：
-
-- 构建时会有预渲染警告（agora-rtm 依赖浏览器环境），不影响功能
-
-## 会话评审记录（每个 Session 追加一段）
-
-### Session 2026-01-27-01
-
-- 对话评审结论：重构完成
-- 变更评审结论：代码已完成，等待用户测试
-- 评审备注：
-  - 添加用户角色系统（Teacher/Student）
-  - 重构 RTM 事件管理（EventEmitter）
-  - 修复 Hook 调用错误和 useEffect 依赖问题
-  - 新增 StudentList 组件
-  - 需要用户运行 `npm run dev` 测试验证
-
-### Session 2026-01-27-02 (之前)
-
-- 对话评审结论：基本完成
-- 变更评审结论：代码已完成，等待用户测试
-- 评审备注：
-  - 所有组件和功能已实现
-  - 类型检查通过
-  - 构建有预渲染警告但不影响功能（开发模式正常）
+**创建时间**: 2026-02-13
+**最后更新**: 2026-02-13

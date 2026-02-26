@@ -1,0 +1,137 @@
+.navbar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  height: 60px;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+
+  .navbar-menu {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex: 1;
+  }
+
+  .navbar-footer {
+    display: none;
+  }
+
+  .navbar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #718096;
+    transition: color 0.2s;
+    cursor: pointer;
+
+    .navbar-icon {
+      font-size: 1.5rem;
+    }
+
+    .navbar-label {
+      font-size: 0.75rem;
+    }
+
+    &:hover {
+      color: #667eea;
+    }
+
+    &.active {
+      color: #667eea;
+      font-weight: 600;
+    }
+  }
+
+  .logout-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    color: #e53e3e;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    .navbar-icon {
+      font-size: 1.5rem;
+    }
+
+    .navbar-label {
+      font-size: 0.75rem;
+    }
+
+    &:hover {
+      color: #c53030;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-top: none;
+    border-right: 1px solid #e2e8f0;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+    padding-top: 2rem;
+
+    .navbar-menu {
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0.5rem;
+    }
+
+    .navbar-footer {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      margin-top: auto;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .navbar-item {
+      flex-direction: row;
+      justify-content: flex-start;
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      gap: 0.75rem;
+
+      .navbar-icon {
+        font-size: 1.25rem;
+      }
+
+      .navbar-label {
+        font-size: 0.875rem;
+      }
+    }
+
+    .logout-button {
+      flex-direction: row;
+      justify-content: flex-start;
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      gap: 0.75rem;
+
+      .navbar-icon {
+        font-size: 1.25rem;
+      }
+
+      .navbar-label {
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

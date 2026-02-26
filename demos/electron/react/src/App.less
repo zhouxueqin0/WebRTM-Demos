@@ -1,0 +1,22 @@
+@import './styles/variables.less';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+main {
+  transition: margin-left @transition-normal;
+}
+
+@media (max-width: @screen-mobile) {
+  main {
+    margin-left: @navbar-width-mobile !important;
+  }
+}
+
