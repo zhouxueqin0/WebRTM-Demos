@@ -1,4 +1,4 @@
-import { User } from "@/types/user";
+import { User } from "./mocks/type";
 import { create } from "zustand";
 
 interface UserStore extends User {

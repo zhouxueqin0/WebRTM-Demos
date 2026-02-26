@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import type { ChatDrawerState, Message } from "../../types/chat";
-import { handleChannelMessage, useChatStore } from "../../store/chat";
-import styles from "./ChatDrawer.module.css";
-import { rtmEventEmitter } from "../../../shared/rtm";
+import type { ChatDrawerState } from "../../store/mocks/type";
+import { useChatStore } from "../../store/chat";
+import styles from "./styles/ChatDrawer.module.css";
 
 interface ChatDrawerProps {
   state: ChatDrawerState;
@@ -34,13 +33,6 @@ export default function ChatDrawer({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  useEffect(() => {
-    return () => {
-      // 退出聊天，清理消息监听
-      rtmEventEmitter.removeListener("message", handleChannelMessage);
-    };
-  }, []);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;

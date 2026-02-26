@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ["events", "agora-rtm"],
+    include: ["events"],
     esbuildOptions: {
       define: {
         global: "globalThis",
@@ -19,22 +19,9 @@ export default defineConfig({
     },
   },
   build: {
-    commonjsOptions: {
-      include: [/events/, /agora-rtm/, /node_modules/],
-      transformMixedEsModules: true,
-    },
     rollupOptions: {
       output: {
         exports: "named",
-      },
-      onwarn(warning, warn) {
-        if (
-          warning.code === "MIXED_EXPORTS" ||
-          (warning.message && warning.message.includes("export * from"))
-        ) {
-          return;
-        }
-        warn(warning);
       },
     },
   },

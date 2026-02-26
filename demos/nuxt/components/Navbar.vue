@@ -25,10 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { useAppStore } from "../stores/app";
 
 const route = useRoute();
 const router = useRouter();
+const appStore = useAppStore();
 
 const navItems = [
   { path: "/home", label: "Home", icon: "🏠" },
@@ -36,25 +37,14 @@ const navItems = [
   { path: "/more", label: "More", icon: "⋯" },
 ];
 
-let mockAppLogout: any;
-
-onMounted(async () => {
-  if (process.client) {
-    const authModule = await import("../../shared/utils/auth");
-    mockAppLogout = authModule.mockAppLogout;
-  }
-});
-
 const navigateTo = async (path: string) => {
-  console.log("Navigating to:", path);
   await router.push(path);
 };
 
 const handleLogout = async () => {
   try {
-    if (mockAppLogout) {
-      await mockAppLogout();
-    }
+    // 调用 App Store 的 logout 方法
+    await appStore.logout();
     await router.push("/");
   } catch (error) {
     console.error("Logout failed:", error);

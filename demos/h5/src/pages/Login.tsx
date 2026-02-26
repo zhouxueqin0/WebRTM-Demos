@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { userIdAtom, userRoleAtom } from "../store/user";
-import { mockAppLogin } from "../../../shared/utils/auth";
-import "./Login.less";
+import { appStore } from "../store/app";
+import "./styles/Login.less";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,11 +22,12 @@ export default function Login() {
 
     try {
       setLoading(true);
-      await mockAppLogin(userId, "password");
+      setError("");
 
-      localStorage.setItem("username", userId);
-      localStorage.setItem("token", "mock-token-" + Date.now());
+      // 调用 App Store 的 login 方法
+      await appStore.login(userId);
 
+      // 跳转到主页
       navigate("/home");
     } catch (err) {
       setError("Login failed. Please try again.");

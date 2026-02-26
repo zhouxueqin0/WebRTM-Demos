@@ -1,15 +1,13 @@
 import { createApp } from "vue";
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createPinia } from "pinia";
+import "./utils/env-polyfill"; // Must be imported before any RTM code
 import App from "./App.vue";
-import Login from "./views/Login.vue";
-import Dashboard from "./views/Dashboard.vue";
+import router from "./router";
+import "./index.css";
 
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes: [
-    { path: "/", component: Login },
-    { path: "/dashboard", component: Dashboard },
-  ],
-});
+const app = createApp(App);
 
-createApp(App).use(router).mount("#app");
+app.use(createPinia());
+app.use(router);
+
+app.mount("#app");

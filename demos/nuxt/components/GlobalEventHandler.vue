@@ -14,43 +14,115 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
+import { useRtmStore } from "../stores/rtm";
+import { useChatStore } from "../stores/chat";
+import type { RTMEvents } from "agora-rtm";
 
 const router = useRouter();
+const route = useRoute();
 const showKickDialog = ref(false);
+const isListenerRegistered = ref(false);
 
-let handleLinkState: ((eventData: any) => void) | null = null;
-let rtmEventEmitter: any;
-let rtmLogin: any;
+const rtmStore = useRtmStore();
+const chatStore = useChatStore();
 
-onMounted(async () => {
-  if (process.client) {
-    const rtmModule = await import("../../shared/rtm");
-    rtmEventEmitter = rtmModule.rtmEventEmitter;
-    rtmLogin = rtmModule.rtmLogin;
+// linkState 事件处理器
+const handleLinkState = async (eventData: RTMEvents.LinkStateEvent) => {
+  const { currentState, reasonCode } = eventData;
 
-    // 全局监听 linkState 事件，处理互踢
-    handleLinkState = (eventData: any) => {
-      const { currentState, reasonCode } = eventData;
+  console.log("linkState event:", currentState, reasonCode);
 
-      if (currentState === "FAILED" && reasonCode === "SAME_UID_LOGIN") {
-        // 显示互踢提示框
-        showKickDialog.value = true;
-      }
-    };
-    rtmEventEmitter.addListener("linkstate", handleLinkState);
+  // 处理互踢
+  if (currentState === "FAILED" && reasonCode === "SAME_UID_LOGIN") {
+    showKickDialog.value = true;
+  }
+
+  // 处理 Token 过期
+  if (
+    currentState === "FAILED" &&
+    (reasonCode === "INVALID_TOKEN" || reasonCode === "TOKEN_EXPIRED")
+  ) {
+    try {
+      await rtmStore.rtmLogin();
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+    }
+  }
+};
+
+// 注册监听器
+const registerListeners = () => {
+  if (isListenerRegistered.value) return;
+
+  // 检查 RTM 是否已登录
+  if (!rtmStore.checkRtmStatus()) {
+    return;
+  }
+
+  // 注册私有消息监听（全局生命周期）
+  chatStore.registerPrivateMessageListener();
+
+  // 注册 linkState 监听（处理互踢/Token过期）
+  rtmStore.registerLinkStateListener(handleLinkState);
+
+  isListenerRegistered.value = true;
+  console.log("GlobalEventHandler: listeners registered");
+};
+
+// 取消监听器
+const unregisterListeners = () => {
+  if (!isListenerRegistered.value) return;
+
+  try {
+    // 取消私有消息监听
+    chatStore.unregisterPrivateMessageListener();
+
+    // 取消 linkState 监听
+    rtmStore.unregisterLinkStateListener(handleLinkState);
+
+    isListenerRegistered.value = false;
+    console.log("GlobalEventHandler: listeners unregistered");
+  } catch (error) {
+    console.error("Failed to unregister listeners:", error);
+  }
+};
+
+// 监听路由变化，登录成功后注册监听器
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath !== "/") {
+      // 非登录页，尝试注册监听器
+      registerListeners();
+    }
+  },
+  { immediate: true }
+);
+
+// 监听 RTM 登录状态
+watch(
+  () => rtmStore.isLoggedIn,
+  (isLoggedIn) => {
+    if (isLoggedIn) {
+      registerListeners();
+    }
+  }
+);
+
+onMounted(() => {
+  if (route.path !== "/") {
+    registerListeners();
   }
 });
 
 onUnmounted(() => {
-  if (handleLinkState && rtmEventEmitter) {
-    rtmEventEmitter.removeListener("linkstate", handleLinkState);
-  }
+  unregisterListeners();
 });
 
 const handleRelogin = async () => {
   try {
-    await rtmLogin();
+    await rtmStore.rtmLogin();
     showKickDialog.value = false;
     console.log("重新登录成功");
   } catch (error) {
