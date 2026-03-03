@@ -1,16 +1,19 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../../../../shared/utils/auth";
-import "./Home.css";
+import { useAppStore } from "../store/app";
+import { useRTMStore } from "../store/rtm";
+import "./styles/Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
+  const appStore = useAppStore();
+  const rtmStore = useRTMStore();
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!appStore.isLoggedIn || !rtmStore.isLoggedIn) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [appStore.isLoggedIn, rtmStore.isLoggedIn, navigate]);
 
   return (
     <div className="home-container">

@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../../../../shared/utils/auth";
-import "./Home.css";
+import { useRtmStore } from "../store/rtm";
+import "./styles/Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
+  const checkRtmStatus = useRtmStore((s) => s.checkRtmStatus);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!checkRtmStatus()) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [navigate, checkRtmStatus]);
 
   return (
     <div className="home-container">

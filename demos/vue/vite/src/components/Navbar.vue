@@ -26,10 +26,11 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { mockAppLogout } from "../../../../shared/utils/auth";
+import { useAppStore } from "../stores/app";
 
 const route = useRoute();
 const router = useRouter();
+const appStore = useAppStore();
 
 const navItems = [
   { path: "/home", label: "Home", icon: "🏠" },
@@ -43,7 +44,7 @@ const navigateTo = async (path: string) => {
 
 const handleLogout = async () => {
   try {
-    await mockAppLogout();
+    await appStore.logout();
     await router.push("/");
   } catch (error) {
     console.error("Logout failed:", error);

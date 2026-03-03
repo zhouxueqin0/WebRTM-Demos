@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { User } from "../types/user";
+import type { User } from "../stores/rtm";
 import { useChatStore } from "../stores/chat";
 
 interface Props {

@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockAppLogin } from "../../../../shared/utils/auth";
-import { rtmEventEmitter } from "../../../../shared/rtm";
-import { handleUserMessage } from "../store/chat";
 import { useUserStore } from "../store/user";
-import "./Login.css";
+import { useAppStore } from "../store/app";
+import "./styles/Login.css";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -13,6 +11,7 @@ export default function Login() {
   const userRole = useUserStore((s) => s.role);
   const setUserId = useUserStore((s) => s.setUserId);
   const setUserRole = useUserStore((s) => s.setRole);
+  const login = useAppStore((s) => s.login);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -25,15 +24,12 @@ export default function Login() {
     try {
       setLoading(true);
       setError("");
-      rtmEventEmitter.addListener("message", handleUserMessage);
-      await mockAppLogin(userId, "password");
 
-      localStorage.setItem("username", userId);
-      localStorage.setItem("token", "mock-token-" + Date.now());
+      // 调用 App Store 的 login 方法
+      await login();
 
       navigate("/home");
     } catch (error) {
-      rtmEventEmitter.removeListener("message", handleUserMessage);
       console.error("Login failed:", error);
       setError("Login failed. Please try again.");
     } finally {

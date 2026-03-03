@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Classroom } from "../types/chat";
+import type { Classroom } from "../stores/rtm";
 
 interface Props {
   classrooms: Classroom[];

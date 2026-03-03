@@ -45,10 +45,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onUnmounted } from "vue";
-import type { ChatDrawerState } from "../types/chat";
-import { useChatStore, handleChannelMessage } from "../stores/chat";
-import { rtmEventEmitter } from "../../../../shared/rtm";
+import { ref, computed, watch, nextTick } from "vue";
+import type { ChatDrawerState } from "../stores/rtm";
+import { useChatStore } from "../stores/chat";
 
 interface Props {
   state: ChatDrawerState;
@@ -81,10 +80,6 @@ watch(
   },
   { deep: true },
 );
-
-onUnmounted(() => {
-  rtmEventEmitter.removeListener("message", handleChannelMessage);
-});
 
 const handleSend = () => {
   if (!inputValue.value.trim()) return;

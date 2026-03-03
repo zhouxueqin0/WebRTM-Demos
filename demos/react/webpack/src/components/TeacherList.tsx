@@ -1,6 +1,6 @@
-import type { User } from "../types/user";
+import { type User } from "../store/rtm";
 import { useChatStore } from "../store/chat";
-import "./TeacherList.css";
+import "./styles/TeacherList.css";
 
 interface TeacherListProps {
   teachers: User[];

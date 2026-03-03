@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../../../../shared/utils/auth";
-import "./More.css";
+import { useRtmStore } from "../store/rtm";
+import "./styles/More.css";
 
 export default function More() {
   const navigate = useNavigate();
+  const checkRtmStatus = useRtmStore((s) => s.checkRtmStatus);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!checkRtmStatus()) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [navigate, checkRtmStatus]);
 
   return (
     <div className="more-container">

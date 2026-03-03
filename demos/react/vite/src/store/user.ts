@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { User } from "../types/user";
+import type { User } from "./rtm";
 
 interface UserStore extends User {
   setUserId: (uid: string) => void;
@@ -17,9 +17,10 @@ export const useUserStore = create<UserStore>((set) => ({
       ...state,
       userId: uid,
     })),
-  setRole: (role) =>
+  setRole(role) {
     set((state) => ({
       ...state,
       role,
-    })),
+    }));
+  },
 }));

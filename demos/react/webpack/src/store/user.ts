@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import type { User } from "../types/user";
+import { type User, type UserRole } from "./rtm";
 
 interface UserStore extends User {
   setUserId: (uid: string) => void;
-  setRole: (role: "teacher" | "student") => void;
+  setRole: (role: UserRole) => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({

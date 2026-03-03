@@ -14,30 +14,44 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { rtmEventEmitter, rtmLogin } from "../../../../shared/rtm";
+import { useRtmStore, type RTMEvents } from "../stores/rtm";
+import { useChatStore } from "../stores/chat";
 
 const router = useRouter();
+const rtmStore = useRtmStore();
+const chatStore = useChatStore();
 const showKickDialog = ref(false);
 
-const handleLinkState = (eventData: any) => {
+const handleLinkState = async (eventData: RTMEvents.LinkStateEvent) => {
   const { currentState, reasonCode } = eventData;
 
   if (currentState === "FAILED" && reasonCode === "SAME_UID_LOGIN") {
     showKickDialog.value = true;
   }
+
+  if (currentState === "FAILED" && reasonCode === "TOKEN_EXPIRED") {
+    try {
+      await rtmStore.rtmLogin();
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+      router.push("/");
+    }
+  }
 };
 
 onMounted(() => {
-  rtmEventEmitter.addListener("linkstate", handleLinkState);
+  chatStore.registerPrivateMessageListener();
+  rtmStore.registerLinkStateListener(handleLinkState);
 });
 
 onUnmounted(() => {
-  rtmEventEmitter.removeListener("linkstate", handleLinkState);
+  chatStore.unregisterPrivateMessageListener();
+  rtmStore.unregisterLinkStateListener(handleLinkState);
 });
 
 const handleRelogin = async () => {
   try {
-    await rtmLogin();
+    await rtmStore.rtmLogin();
     showKickDialog.value = false;
     console.log("重新登录成功");
   } catch (error) {

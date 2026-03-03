@@ -1,29 +1,37 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../../../../shared/utils/auth";
+import { useAppStore } from "../store/app";
 import {
-  subscribeChannel,
-  unsubscribeChannel,
-  sendChannelMessage,
-  sendMessageToUser,
-  getGlobalRtmClient,
-  rtmEventEmitter,
-} from "../../../../shared/rtm";
-import { handleChannelMessage, useChatStore } from "../store/chat";
-import { MOCK_TEACHERS, MOCK_CLASSROOMS, MOCK_STUDENTS } from "../mocks/data";
+  useRTMStore,
+  MOCK_TEACHERS,
+  MOCK_CLASSROOMS,
+  MOCK_STUDENTS,
+  type User,
+  type Classroom,
+} from "../store/rtm";
+import { useChatStore } from "../store/chat";
+import { useUserStore } from "../store/user";
 import TeacherList from "../components/TeacherList";
 import StudentList from "../components/StudentList";
 import ClassroomList from "../components/ClassroomList";
 import ChatDrawer from "../components/ChatDrawer";
-import type { Classroom, ChatDrawerState, Message } from "../types/chat";
-import type { User } from "../types/user";
-import { useUserStore } from "../store/user";
-import "./Message.css";
+import "./styles/Message.css";
+
+interface ChatDrawerState {
+  isOpen: boolean;
+  mode: "private" | "channel";
+  targetId: string;
+  targetName: string;
+}
 
 export default function Message() {
   const navigate = useNavigate();
+  const appStore = useAppStore();
+  const rtmStore = useRTMStore();
+  const chatStore = useChatStore();
   const userId = useUserStore((s) => s.userId);
   const userRole = useUserStore((s) => s.role);
+
   const [drawerState, setDrawerState] = useState<ChatDrawerState>({
     isOpen: false,
     mode: "private",
@@ -31,54 +39,26 @@ export default function Message() {
     targetName: "",
   });
 
-  const currentChannelRef = useRef<string | null>(null);
-  const channelListenerActiveRef = useRef(false);
-
-  const clearUnread = useChatStore((s) => s.clearUnread);
-
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!appStore.isLoggedIn || !rtmStore.isLoggedIn) {
       navigate("/");
       return;
     }
-
-    try {
-      getGlobalRtmClient();
-    } catch (e) {
-      navigate("/");
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    return () => {
-      if (channelListenerActiveRef.current) {
-        rtmEventEmitter.removeListener("message", handleChannelMessage);
-        channelListenerActiveRef.current = false;
-      }
-    };
-  }, []);
+  }, [appStore.isLoggedIn, rtmStore.isLoggedIn, navigate]);
 
   const handlePrivateChatClick = (user: User) => {
+    chatStore.openPrivateChat(user.userId);
     setDrawerState({
       isOpen: true,
       mode: "private",
       targetId: user.userId,
       targetName: user.name ?? user.userId,
     });
-
-    clearUnread(user.userId);
   };
 
   const handleClassroomClick = async (classroom: Classroom) => {
-    if (!channelListenerActiveRef.current) {
-      rtmEventEmitter.addListener("message", handleChannelMessage);
-      channelListenerActiveRef.current = true;
-    }
-
     try {
-      await subscribeChannel(classroom.id);
-      currentChannelRef.current = classroom.id;
-
+      await chatStore.openChannelChat(classroom.id);
       setDrawerState({
         isOpen: true,
         mode: "channel",
@@ -86,46 +66,25 @@ export default function Message() {
         targetName: classroom.name,
       });
     } catch (error) {
-      console.error("Failed to subscribe channel:", error);
+      console.error("Failed to open channel chat:", error);
     }
   };
 
   const handleCloseDrawer = async () => {
-    if (drawerState.mode === "channel" && currentChannelRef.current) {
-      try {
-        if (channelListenerActiveRef.current) {
-          rtmEventEmitter.removeListener("message", handleChannelMessage);
-          channelListenerActiveRef.current = false;
-        }
-        await unsubscribeChannel(currentChannelRef.current);
-        currentChannelRef.current = null;
-      } catch (error) {
-        console.error("Failed to unsubscribe channel:", error);
-      }
+    try {
+      await chatStore.closeChat();
+      setDrawerState({
+        ...drawerState,
+        isOpen: false,
+      });
+    } catch (error) {
+      console.error("Failed to close chat:", error);
     }
-
-    setDrawerState({
-      ...drawerState,
-      isOpen: false,
-    });
   };
 
   const handleSendMessage = async (content: string) => {
     try {
-      if (drawerState.mode === "private") {
-        await sendMessageToUser(drawerState.targetId, content);
-
-        const msg: Message = {
-          id: `${Date.now()}-${Math.random()}`,
-          senderId: userId,
-          senderName: "Me",
-          content,
-          timestamp: Date.now(),
-        };
-        useChatStore.getState().addPrivateMessage(drawerState.targetId, msg);
-      } else {
-        await sendChannelMessage(drawerState.targetId, content);
-      }
+      await chatStore.sendMessage(content);
     } catch (error) {
       console.error("Failed to send message:", error);
     }

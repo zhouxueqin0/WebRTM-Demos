@@ -37,23 +37,13 @@ import ClassroomList from "../components/ClassroomList.vue";
 import ChatDrawer from "../components/ChatDrawer.vue";
 import { useChatStore } from "../stores/chat";
 import { useUserStore } from "../stores/user";
-import { MOCK_TEACHERS, MOCK_CLASSROOMS, MOCK_STUDENTS } from "../mocks/data";
-import type { Classroom, ChatDrawerState, Message } from "../types/chat";
-import type { User } from "../types/user";
-import { isAuthenticated } from "../../../../shared/utils/auth";
-import {
-  subscribeChannel,
-  unsubscribeChannel,
-  sendChannelMessage,
-  sendMessageToUser,
-  getGlobalRtmClient,
-  rtmEventEmitter,
-} from "../../../../shared/rtm";
-import { handleChannelMessage } from "../stores/chat";
+import { useRtmStore, MOCK_TEACHERS, MOCK_CLASSROOMS, MOCK_STUDENTS } from "../stores/rtm";
+import type { Classroom, ChatDrawerState, User } from "../stores/rtm";
 
 const router = useRouter();
 const userStore = useUserStore();
 const chatStore = useChatStore();
+const rtmStore = useRtmStore();
 
 const drawerState = ref<ChatDrawerState>({
   isOpen: false,
@@ -62,38 +52,27 @@ const drawerState = ref<ChatDrawerState>({
   targetName: "",
 });
 
-const currentChannel = ref<string | null>(null);
-
 onMounted(() => {
-  if (!isAuthenticated()) {
+  if (!rtmStore.checkRtmStatus()) {
     router.push("/");
     return;
-  }
-
-  try {
-    getGlobalRtmClient();
-  } catch (e) {
-    router.push("/");
   }
 });
 
 const handlePrivateChatClick = (user: User) => {
+  chatStore.openPrivateChat(user.userId);
+
   drawerState.value = {
     isOpen: true,
     mode: "private",
     targetId: user.userId,
     targetName: user.name ?? user.userId,
   };
-
-  chatStore.clearUnread(user.userId);
 };
 
 const handleClassroomClick = async (classroom: Classroom) => {
-  rtmEventEmitter.addListener("message", handleChannelMessage);
-
   try {
-    await subscribeChannel(classroom.id);
-    currentChannel.value = classroom.id;
+    await chatStore.openChannelChat(classroom.id);
 
     drawerState.value = {
       isOpen: true,
@@ -102,19 +81,15 @@ const handleClassroomClick = async (classroom: Classroom) => {
       targetName: classroom.name,
     };
   } catch (error) {
-    console.error("Failed to subscribe channel:", error);
+    console.error("Failed to open channel chat:", error);
   }
 };
 
 const handleCloseDrawer = async () => {
-  if (drawerState.value.mode === "channel" && currentChannel.value) {
-    try {
-      rtmEventEmitter.removeListener("message", handleChannelMessage);
-      await unsubscribeChannel(currentChannel.value);
-      currentChannel.value = null;
-    } catch (error) {
-      console.error("Failed to unsubscribe channel:", error);
-    }
+  try {
+    await chatStore.closeChat(drawerState.value.mode);
+  } catch (error) {
+    console.error("Failed to close chat:", error);
   }
 
   drawerState.value = {
@@ -125,20 +100,11 @@ const handleCloseDrawer = async () => {
 
 const handleSendMessage = async (content: string) => {
   try {
-    if (drawerState.value.mode === "private") {
-      await sendMessageToUser(drawerState.value.targetId, content);
-
-      const msg: Message = {
-        id: `${Date.now()}-${Math.random()}`,
-        senderId: userStore.userId,
-        senderName: "Me",
-        content,
-        timestamp: Date.now(),
-      };
-      chatStore.addPrivateMessage(drawerState.value.targetId, msg);
-    } else {
-      await sendChannelMessage(drawerState.value.targetId, content);
-    }
+    await chatStore.sendMessage(
+      drawerState.value.targetId,
+      content,
+      drawerState.value.mode
+    );
   } catch (error) {
     console.error("Failed to send message:", error);
   }

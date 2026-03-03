@@ -1,10 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { mockAppLogout } from "../../../../shared/utils/auth";
-import "./Navbar.css";
+import { useAppStore } from "../store/app";
+import "./styles/Navbar.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const appStore = useAppStore();
 
   const navItems = [
     { path: "/home", label: "Home", icon: "🏠" },
@@ -18,7 +19,8 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await mockAppLogout();
+      await appStore.logout();
+      localStorage.removeItem("username");
       await navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);

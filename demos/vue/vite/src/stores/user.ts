@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { User } from "../types/user";
+import type { User } from "./rtm";
 
 export const useUserStore = defineStore("user", {
   state: (): User => ({
@@ -15,6 +15,12 @@ export const useUserStore = defineStore("user", {
     },
     setRole(role: "teacher" | "student") {
       this.role = role;
+    },
+    reset() {
+      this.userId = "";
+      this.name = "";
+      this.avatar = "";
+      this.role = "student";
     },
   },
 });

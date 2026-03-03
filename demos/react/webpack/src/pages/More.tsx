@@ -1,16 +1,19 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../../../../shared/utils/auth";
-import "./More.css";
+import { useAppStore } from "../store/app";
+import { useRTMStore } from "../store/rtm";
+import "./styles/More.css";
 
 export default function More() {
   const navigate = useNavigate();
+  const appStore = useAppStore();
+  const rtmStore = useRTMStore();
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!appStore.isLoggedIn || !rtmStore.isLoggedIn) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [appStore.isLoggedIn, rtmStore.isLoggedIn, navigate]);
 
   return (
     <div className="more-container">

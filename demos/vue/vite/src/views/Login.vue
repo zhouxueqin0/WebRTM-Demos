@@ -50,13 +50,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { mockAppLogin } from "../../../../shared/utils/auth";
-import { rtmEventEmitter } from "../../../../shared/rtm";
-import { handleUserMessage } from "../stores/chat";
 import { useUserStore } from "../stores/user";
+import { useAppStore } from "../stores/app";
 
 const router = useRouter();
 const userStore = useUserStore();
+const appStore = useAppStore();
 const loading = ref(false);
 const error = ref("");
 
@@ -69,16 +68,12 @@ const handleLogin = async () => {
   try {
     loading.value = true;
     error.value = "";
-    rtmEventEmitter.addListener("message", handleUserMessage);
-    await mockAppLogin(userStore.userId, "password");
 
-    localStorage.setItem("username", userStore.userId);
-    localStorage.setItem("token", "mock-token-" + Date.now());
+    await appStore.login();
 
     router.push("/home");
-  } catch (error) {
-    rtmEventEmitter.removeListener("message", handleUserMessage);
-    console.error("Login failed:", error);
+  } catch (err) {
+    console.error("Login failed:", err);
     error.value = "Login failed. Please try again.";
   } finally {
     loading.value = false;

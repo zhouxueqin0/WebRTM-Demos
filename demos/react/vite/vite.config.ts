@@ -9,7 +9,6 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     resolve: {
       alias: {
-        "agora-rtm": path.resolve(__dirname, "node_modules/agora-rtm"),
         events: path.resolve(__dirname, "node_modules/events"),
       },
     },

@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import type { ChatDrawerState } from "../types/chat";
-import { handleChannelMessage, useChatStore } from "../store/chat";
-import { rtmEventEmitter } from "../../../../shared/rtm";
-import "./ChatDrawer.css";
+import type { ChatDrawerState } from "../store/rtm";
+import { useChatStore } from "../store/chat";
+import "./styles/ChatDrawer.css";
 
 interface ChatDrawerProps {
   state: ChatDrawerState;
@@ -31,12 +30,6 @@ export default function ChatDrawer({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  useEffect(() => {
-    return () => {
-      rtmEventEmitter.removeListener("message", handleChannelMessage);
-    };
-  }, []);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;
